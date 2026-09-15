@@ -1,5 +1,15 @@
 {
   "name": "logs.rent",
   "description": "Digitale marktplaats en beurs voor de verhuur en verkoop van online accounts met realtime koersen, orderboek, escrow en Investbotiq integratie op logs.rent",
+  "url": "https://logs.rent",
+  "image": "https://logs.rent/og-image.png",
+  "logo": "https://logs.rent/favicon.svg",
+  "keywords": [
+    "digitale marktplaats",
+    "accountverhuur",
+    "accountverkoop",
+    "escrow",
+    "Investbotiq"
+  ],
   "requestFramePermissions": []
 }

@@ -42,19 +42,19 @@ export function BeursTab({
   const [timeframe, setTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('1W');
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="min-w-0 space-y-6">
+      <div className="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left 2 Cols: Main Chart, Account Header, Quick Actions */}
-        <div className="lg:col-span-2 bg-[#0F172A] border border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-xl">
+        <div className="min-w-0 lg:col-span-2 bg-[#0F172A] border border-slate-800 rounded-2xl p-3 sm:p-5 flex flex-col justify-between shadow-xl">
           {/* Top header of selected asset */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
             <div className="flex items-center gap-3.5">
               <div className="w-12 h-12 rounded-xl bg-[#080C14] border border-slate-700 flex items-center justify-center text-emerald-400 text-xl font-mono font-bold shadow-inner">
                 {selectedAccount.platform.slice(0, 2).toUpperCase()}
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-white font-mono tracking-tight">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="max-w-full truncate text-base sm:text-lg font-bold text-white font-mono tracking-tight">
                     {selectedAccount.title}
                   </h2>
                   <span
@@ -124,7 +124,7 @@ export function BeursTab({
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={onOpenHandoffModal}
                 className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-mono"

@@ -51,10 +51,22 @@ import {
   Lock,
   Info,
   HelpCircle,
-  Mail
+  Mail,
+  Moon,
+  Sun,
+  Languages
 } from 'lucide-react';
 
 export default function App() {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window === 'undefined') return 'dark';
+    return (window.localStorage.getItem('logs-rent-theme') as 'dark' | 'light' | null) ?? 'dark';
+  });
+  const [language, setLanguage] = useState<'nl' | 'en'>(() => {
+    if (typeof window === 'undefined') return 'nl';
+    return (window.localStorage.getItem('logs-rent-language') as 'nl' | 'en' | null) ?? 'nl';
+  });
+
   // State management
   const [activeTab, setActiveTab] = useState<string>('beurs');
   const [accounts, setAccounts] = useState<AccountListing[]>(INITIAL_ACCOUNTS);
@@ -81,6 +93,50 @@ export default function App() {
 
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.classList.toggle('light', theme === 'light');
+    window.localStorage.setItem('logs-rent-theme', theme);
+    window.localStorage.setItem('logs-rent-language', language);
+  }, [language, theme]);
+
+  const copy = {
+    nl: {
+      subtitle: 'Digital Asset Exchange',
+      version: 'v2.5 Pro',
+      wallet: 'Handelskassa Saldo',
+      list: 'Noteren',
+      trader: 'Handelaar',
+      login: 'Inloggen',
+      stats: ['24u Beursvolume', 'Actieve Accounts', 'Escrow Borgsommen', 'A-Grade Premium', 'Investbotiq Volume'],
+      footer: 'Realtime Digitale Account & Flex Activa Marktplaats',
+      theme: 'Donkere modus',
+      heroEyebrow: 'De exchange voor digitale assets',
+      heroTitle: 'Handel met overzicht.',
+      heroDescription: 'Ontdek, vergelijk en beheer digitale accounts met realtime marktdata, escrow-bescherming en een portfolio dat met je meebeweegt.',
+      liveMarket: 'Markt live',
+      activeListings: '3.492 actieve listings',
+      browse: 'Bekijk catalogus'
+    },
+    en: {
+      subtitle: 'Digital Asset Exchange',
+      version: 'v2.5 Pro',
+      wallet: 'Trading Wallet',
+      list: 'List asset',
+      trader: 'Trader',
+      login: 'Sign in',
+      stats: ['24h Market Volume', 'Active Accounts', 'Escrow Deposits', 'A-Grade Premium', 'Investbotiq Volume'],
+      footer: 'Realtime Digital Account & Flexible Asset Marketplace',
+      theme: 'Light mode',
+      heroEyebrow: 'The exchange for digital assets',
+      heroTitle: 'Trade with clarity.',
+      heroDescription: 'Discover, compare and manage digital accounts with realtime market data, escrow protection and a portfolio that moves with you.',
+      liveMarket: 'Market live',
+      activeListings: '3,492 active listings',
+      browse: 'Browse catalog'
+    }
+  }[language];
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -228,22 +284,22 @@ export default function App() {
   };
 
   const navTabs = [
-    { key: 'beurs', label: 'Beurs', icon: TrendingUp },
-    { key: 'catalogus', label: 'Catalogus', icon: Store },
-    { key: 'valuatie', label: 'Valuatie', icon: Calculator },
+    { key: 'beurs', label: language === 'nl' ? 'Beurs' : 'Market', icon: TrendingUp },
+    { key: 'catalogus', label: language === 'nl' ? 'Catalogus' : 'Catalog', icon: Store },
+    { key: 'valuatie', label: language === 'nl' ? 'Valuatie' : 'Valuation', icon: Calculator },
     { key: 'investbotiq', label: 'Investbotiq', icon: Bot },
-    { key: 'portfolio', label: 'Mijn Portfolio', icon: Wallet },
+    { key: 'portfolio', label: language === 'nl' ? 'Mijn Portfolio' : 'My Portfolio', icon: Wallet },
     { key: 'escrow', label: 'Escrow & 2FA', icon: ShieldCheck },
-    { key: 'dispuut', label: 'Dispuut Centrum', icon: ShieldAlert },
+    { key: 'dispuut', label: language === 'nl' ? 'Dispuut Centrum' : 'Dispute Center', icon: ShieldAlert },
     { key: 'api', label: 'API Portal', icon: Code },
-    { key: 'veiligheid', label: 'ToS Veiligheid', icon: EyeOff },
-    { key: 'overons', label: 'Over Logs Rent', icon: Info },
+    { key: 'veiligheid', label: language === 'nl' ? 'ToS Veiligheid' : 'ToS Safety', icon: EyeOff },
+    { key: 'overons', label: language === 'nl' ? 'Over Logs Rent' : 'About Logs Rent', icon: Info },
     { key: 'faq', label: 'FAQ', icon: HelpCircle },
     { key: 'contact', label: 'Contact', icon: Mail }
   ];
 
   return (
-    <div className="bg-[#080C14] text-slate-200 min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className={`${theme === 'light' ? 'theme-light' : ''} min-w-0 overflow-x-hidden bg-[#080C14] text-slate-200 min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300`}>
       {/* Top Ticker Bar with dynamic price action */}
       <div className="bg-slate-950 border-b border-slate-800 py-1.5 text-xs font-mono text-slate-400 overflow-hidden select-none">
         <div className="w-full overflow-hidden whitespace-nowrap">
@@ -276,31 +332,31 @@ export default function App() {
 
       {/* Main Sticky Header with Monogram Logo & Handelskassa Wallet Module */}
       <header className="sticky top-0 z-40 bg-[#080C14]/90 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+        <div className="max-w-[1600px] mx-auto w-full min-w-0 px-3 sm:px-6 lg:px-8 min-h-16 py-2 flex flex-nowrap items-center justify-between gap-2">
           {/* Brand Monogram L.R */}
           <div
             onClick={() => setActiveTab('beurs')}
             className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
-            <Logo className="w-10 h-10" />
-            <div>
+            <Logo className="w-10 h-10" variant={theme === 'light' ? 'light' : 'dark'} />
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="font-extrabold text-base tracking-wider text-white">
                   LOGS.RENT
                 </span>
-                <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-mono px-1.5 py-0.5 rounded border border-emerald-500/30 uppercase">
-                  v2.5 Pro
+                <span className="hidden sm:inline-block bg-emerald-500/10 text-emerald-400 text-[10px] font-mono px-1.5 py-0.5 rounded border border-emerald-500/30 uppercase">
+                  {copy.version}
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">
-                Digital Asset Exchange
+              <p className="hidden sm:block text-[10px] text-slate-400 uppercase tracking-widest font-mono truncate">
+                {copy.subtitle}
               </p>
             </div>
           </div>
 
           {/* Navigation Tabs bar */}
-          <nav className="hidden xl:flex items-center gap-1 bg-[#0F172A] p-1 rounded-xl border border-slate-800 text-xs font-mono">
-            {navTabs.map((tab) => {
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 overflow-hidden text-xs font-mono 2xl:flex">
+            {navTabs.filter((tab) => !['escrow', 'dispuut', 'api', 'veiligheid', 'faq', 'contact'].includes(tab.key)).map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
               return (
@@ -313,7 +369,7 @@ export default function App() {
                       setActiveTab(tab.key);
                     }
                   }}
-                  className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                  className={`px-2 py-1.5 rounded-lg transition flex items-center gap-1.5 whitespace-nowrap ${
                     isActive
                       ? 'text-emerald-400 bg-slate-800 border border-slate-700 font-bold shadow-sm'
                       : 'text-slate-400 hover:text-white'
@@ -327,16 +383,16 @@ export default function App() {
           </nav>
 
           {/* Actions: Handelskassa Wallet Module & Account Noteren */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="ml-auto flex items-center justify-end gap-1.5 shrink-0 sm:gap-2.5">
             {/* Handelskassa Saldo Module with Deposit/Withdraw trigger */}
-            <div
+              <div
               onClick={() => setIsWalletOpen(true)}
-              className="flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm group"
+              className="hidden md:flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm group"
               title="Klik voor storting of opname uit de Handelskassa"
             >
               <div className="text-right font-mono">
                 <span className="text-[9px] text-slate-400 block leading-none">
-                  Handelskassa Saldo
+                  {copy.wallet}
                 </span>
                 <span className="text-xs font-bold text-emerald-400">
                   € {userBalance.toLocaleString('nl-NL')},00
@@ -353,7 +409,7 @@ export default function App() {
               className="hidden sm:flex bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-500/20 font-mono"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Noteren</span>
+              <span className="hidden sm:inline">{copy.list}</span>
             </button>
 
             {/* User Login/Auth trigger */}
@@ -363,16 +419,37 @@ export default function App() {
             >
               <User className="w-3.5 h-3.5 text-cyan-400" />
               <span className="hidden sm:inline">
-                {currentUser ? 'Handelaar' : 'Inloggen'}
+                {currentUser ? copy.trader : copy.login}
               </span>
+            </button>
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="bg-[#0F172A] hover:bg-slate-800 text-slate-300 border border-slate-700 p-2 rounded-xl transition"
+              aria-label={copy.theme}
+              title={copy.theme}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 text-amber-300" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-indigo-500" />
+              )}
+            </button>
+            <button
+              onClick={() => setLanguage(language === 'nl' ? 'en' : 'nl')}
+              className="bg-[#0F172A] hover:bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-2 rounded-xl transition flex items-center gap-1.5 font-mono text-[10px]"
+              aria-label={`Switch to ${language === 'nl' ? 'English' : 'Nederlands'}`}
+              title={language === 'nl' ? 'English' : 'Nederlands'}
+            >
+              <Languages className="w-3.5 h-3.5 text-cyan-400" />
+              <span>{language.toUpperCase()}</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* Mobile Horizontal Navigation Tabs */}
-      <div className="xl:hidden bg-[#0F172A] border-b border-slate-800 px-4 py-2 overflow-x-auto flex items-center gap-1 text-xs font-mono">
-        {navTabs.map((tab) => {
+      <div className="2xl:hidden bg-[#0F172A] border-b border-slate-800 px-3 py-2.5 overflow-x-auto scrollbar-none flex flex-nowrap items-center justify-start gap-1 text-xs font-mono">
+        {navTabs.filter((tab) => !['escrow', 'dispuut', 'api', 'veiligheid', 'faq', 'contact'].includes(tab.key)).map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
           return (
@@ -398,56 +475,63 @@ export default function App() {
         })}
       </div>
 
-      {/* Key Market Stats Banner */}
-      <section className="bg-gradient-to-b from-slate-950 via-[#080C14] to-[#080C14] border-b border-slate-800/80 py-4 px-4 sm:px-6 lg:px-8 font-mono">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <div className="bg-[#0F172A]/70 border border-slate-800 p-3 rounded-xl">
-            <div className="flex justify-between items-start">
-              <span className="text-[11px] text-slate-400">24u Beursvolume</span>
-              <span className="text-emerald-400 text-[10px] font-bold">+14.8%</span>
+      {/* Market overview */}
+      <section className="border-b border-slate-800/80 bg-gradient-to-b from-slate-950 via-[#080C14] to-[#080C14] px-3 py-6 sm:px-6 lg:px-8 font-mono">
+        <div className="mx-auto grid max-w-7xl min-w-0 gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.95fr)] lg:gap-6">
+          <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-5 sm:p-7">
+            <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-emerald-400/10 blur-3xl" />
+            <div className="relative flex h-full flex-col justify-between gap-8">
+              <div>
+                <div className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                  {copy.heroEyebrow}
+                </div>
+                <h1 className="max-w-md font-sans text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
+                  {copy.heroTitle}
+                </h1>
+                <p className="mt-4 max-w-lg font-sans text-sm leading-6 text-slate-400">
+                  {copy.heroDescription}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => setActiveTab('catalogus')}
+                  className="rounded-xl bg-emerald-400 px-4 py-2.5 text-xs font-bold text-slate-950 transition hover:bg-emerald-300"
+                >
+                  {copy.browse}
+                </button>
+                <span className="text-xs text-slate-400">{copy.activeListings}</span>
+              </div>
             </div>
-            <div className="text-lg font-bold text-white mt-1">€ 482.910</div>
           </div>
 
-          <div className="bg-[#0F172A]/70 border border-slate-800 p-3 rounded-xl">
-            <div className="flex justify-between items-start">
-              <span className="text-[11px] text-slate-400">Actieve Accounts</span>
-              <span className="text-cyan-400 text-[10px] flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                Live
-              </span>
-            </div>
-            <div className="text-lg font-bold text-white mt-1">3.492 Stuks</div>
-          </div>
-
-          <div className="bg-[#0F172A]/70 border border-slate-800 p-3 rounded-xl">
-            <div className="flex justify-between items-start">
-              <span className="text-[11px] text-slate-400">Escrow Borgsommen</span>
-              <span className="text-emerald-400 text-[10px]">100% Guaranteed</span>
-            </div>
-            <div className="text-lg font-bold text-white mt-1">€ 128.450</div>
-          </div>
-
-          <div className="bg-[#0F172A]/70 border border-slate-800 p-3 rounded-xl">
-            <div className="flex justify-between items-start">
-              <span className="text-[11px] text-slate-400">A-Grade Premium</span>
-              <span className="text-emerald-400 text-[10px]">0% Ban Risk</span>
-            </div>
-            <div className="text-lg font-bold text-white mt-1">64.2% A-Grade</div>
-          </div>
-
-          <div className="bg-[#0F172A]/70 border border-slate-800 p-3 rounded-xl col-span-2 lg:col-span-1">
-            <div className="flex justify-between items-start">
-              <span className="text-[11px] text-slate-400">Investbotiq Volume</span>
-              <span className="text-amber-400 text-[10px]">High-Freq</span>
-            </div>
-            <div className="text-lg font-bold text-amber-400 mt-1">41.5% Bot Trades</div>
+          <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+            {[
+              { label: copy.stats[0], value: '€ 482.910', note: '+14.8%', color: 'text-emerald-400' },
+              { label: copy.stats[1], value: '3.492 Stuks', note: copy.liveMarket, color: 'text-cyan-400' },
+              { label: copy.stats[2], value: '€ 128.450', note: '100% Guaranteed', color: 'text-emerald-400' },
+              { label: copy.stats[3], value: '64.2% A-Grade', note: '0% Ban Risk', color: 'text-emerald-400' },
+              { label: copy.stats[4], value: '41.5% Bot Trades', note: 'High-Freq', color: 'text-amber-400' }
+            ].map((stat, index) => (
+              <div
+                key={stat.label}
+                className={`min-w-0 rounded-2xl border border-slate-800 bg-[#0F172A]/70 p-4 sm:p-5 ${
+                  index === 4 ? 'sm:col-span-2' : ''
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 truncate text-[11px] text-slate-400">{stat.label}</span>
+                  <span className={`shrink-0 text-[10px] font-bold ${stat.color}`}>{stat.note}</span>
+                </div>
+                <div className={`mt-3 text-xl font-bold tracking-tight ${stat.color}`}>{stat.value}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Main Content View Switcher */}
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-grow max-w-7xl w-full min-w-0 mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
         {activeTab === 'beurs' && (
           <BeursTab
             selectedAccount={selectedAccount}
@@ -515,18 +599,46 @@ export default function App() {
       <footer className="bg-slate-950 border-t border-slate-800/80 py-8 px-4 sm:px-6 lg:px-8 text-xs font-mono text-slate-400 mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Logo className="w-7 h-7" />
+            <Logo className="w-7 h-7" variant={theme === 'light' ? 'light' : 'dark'} />
             <span>
-              LOGS.RENT • Realtime Digitale Account & Flex Activa Marktplaats
+              LOGS.RENT • {copy.footer}
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-5 text-slate-400">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-slate-400">
             <button
               onClick={() => setActiveTab('overons')}
               className="hover:text-emerald-400 transition cursor-pointer"
             >
               Over Logs Rent
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setIsHandoffOpen(true)}
+              className="hover:text-emerald-400 transition cursor-pointer"
+            >
+              Escrow &amp; 2FA
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('dispuut')}
+              className="hover:text-emerald-400 transition cursor-pointer"
+            >
+              {language === 'nl' ? 'Dispuut Centrum' : 'Dispute Center'}
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('api')}
+              className="hover:text-emerald-400 transition cursor-pointer"
+            >
+              API Portal
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('veiligheid')}
+              className="hover:text-emerald-400 transition cursor-pointer"
+            >
+              {language === 'nl' ? 'ToS Veiligheid' : 'ToS Safety'}
             </button>
             <span>•</span>
             <button
@@ -541,13 +653,6 @@ export default function App() {
               className="hover:text-emerald-400 transition cursor-pointer"
             >
               Contact
-            </button>
-            <span>•</span>
-            <button
-              onClick={() => setActiveTab('veiligheid')}
-              className="hover:text-emerald-400 transition cursor-pointer"
-            >
-              ToS Veiligheid
             </button>
           </div>
         </div>
