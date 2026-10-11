@@ -22,6 +22,8 @@ import { BidTradeModal } from './components/BidTradeModal';
 import { HandoffWizardModal } from './components/HandoffWizardModal';
 import { ListingModal } from './components/ListingModal';
 import { AuthModal } from './components/AuthModal';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './lib/firebase';
 
 import { HomeTab } from './components/tabs/HomeTab';
 import { BeursTab } from './components/tabs/BeursTab';
@@ -82,7 +84,7 @@ export default function App() {
 
   const [userBalance, setUserBalance] = useState<number>(14250.0);
   const [unclaimedYield, setUnclaimedYield] = useState<number>(285.0);
-  const [currentUser, setCurrentUser] = useState<string | null>('handelaar@logs.rent');
+  const [currentUser, setCurrentUser] = useState<string | null>(() => auth.currentUser?.email ?? null);
 
   // Modals state
   const [isWalletOpen, setIsWalletOpen] = useState<boolean>(false);
@@ -95,6 +97,17 @@ export default function App() {
 
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user?.email) {
+        setCurrentUser(user.email);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -416,9 +429,13 @@ export default function App() {
             {/* User Login/Auth trigger */}
             <button
               onClick={() => setIsAuthOpen(true)}
-              className="bg-[#0F172A] hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-mono"
+              className={`text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-mono border ${
+                currentUser === 'info@jamaldrenthe.com'
+                  ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-bold'
+                  : 'bg-[#0F172A] hover:bg-slate-800 text-slate-200 border-slate-700'
+              }`}
             >
-              <User className="w-3.5 h-3.5 text-cyan-400" />
+              <User className={`w-3.5 h-3.5 ${currentUser === 'info@jamaldrenthe.com' ? 'text-emerald-400' : 'text-cyan-400'}`} />
               <span className="hidden sm:inline">
                 {currentUser ? (currentUser === 'info@jamaldrenthe.com' ? 'Admin' : copy.trader) : copy.login}
               </span>
@@ -719,7 +736,11 @@ export default function App() {
         onClose={() => setIsAuthOpen(false)}
         onLoginSuccess={(email) => {
           setCurrentUser(email);
-          triggerToast(`Ingelogd als ${email}`);
+          triggerToast(`Ingelogd als ${email}${email === 'info@jamaldrenthe.com' ? ' (Admin)' : ''}`);
+        }}
+        onLogout={() => {
+          setCurrentUser(null);
+          triggerToast('Succesvol uitgelogd');
         }}
         currentUser={currentUser}
       />
