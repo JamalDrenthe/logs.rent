@@ -2,6 +2,8 @@ export type AccountCategory = 'social' | 'gaming' | 'flex';
 
 export type AccountGrade = 'A' | 'B' | 'C';
 
+export type UserRole = 'visitor' | 'trader' | 'admin';
+
 export interface AccountListing {
   id: number;
   title: string;

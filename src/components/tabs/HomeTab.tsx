@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { AccountListing } from '../../types';
+import { AccountListing, UserRole } from '../../types';
 import {
   TrendingUp,
   Store,
   ShieldCheck,
+  ShieldAlert,
   Bot,
   Zap,
   Sparkles,
@@ -18,7 +19,9 @@ import {
   Globe,
   Award,
   Layers,
-  ArrowUpRight
+  ArrowUpRight,
+  Wallet,
+  User
 } from 'lucide-react';
 
 interface HomeTabProps {
@@ -29,6 +32,9 @@ interface HomeTabProps {
   onOpenListingModal: () => void;
   onOpenHandoffModal: () => void;
   language: 'nl' | 'en';
+  userRole?: UserRole;
+  currentUser?: string | null;
+  onOpenAuthModal?: () => void;
 }
 
 export function HomeTab({
@@ -38,7 +44,10 @@ export function HomeTab({
   onOpenTradeModal,
   onOpenListingModal,
   onOpenHandoffModal,
-  language
+  language,
+  userRole = 'visitor',
+  currentUser,
+  onOpenAuthModal
 }: HomeTabProps) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
@@ -107,7 +116,93 @@ export function HomeTab({
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 font-sans pb-12">
+    <div className="space-y-12 sm:space-y-16 font-sans pb-12">
+      {/* 0. ROLE STATUS HEADER BANNER */}
+      {userRole === 'admin' && (
+        <div className="bg-gradient-to-r from-emerald-950/60 via-[#0F172A] to-slate-900 border border-emerald-500/40 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+              <ShieldAlert className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-white font-bold text-sm">Platform Beheerdersmodus Actief</span>
+                <span className="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded font-bold border border-emerald-500/30">
+                  ADMIN
+                </span>
+              </div>
+              <p className="text-slate-400 text-[11px] mt-0.5">
+                Ingelogd als {currentUser || 'info@jamaldrenthe.com'} • Volledige beheer-, moderatie- en escrow arbitragerechten
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => onNavigate('admin')}
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Naar Admin Dashboard</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {userRole === 'trader' && (
+        <div className="bg-gradient-to-r from-cyan-950/50 via-[#0F172A] to-slate-900 border border-cyan-500/30 rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-white font-bold text-sm">Welkom terug, Handelaar</span>
+                <span className="bg-cyan-500/20 text-cyan-300 text-[10px] px-1.5 py-0.5 rounded font-bold border border-cyan-500/30">
+                  PRO TRADER
+                </span>
+              </div>
+              <p className="text-slate-400 text-[11px] mt-0.5">
+                Actieve sessie: {currentUser} • Handelskassa &amp; Escrow Borgsommen actief
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => onNavigate('portfolio')}
+              className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center gap-1.5"
+            >
+              <Wallet className="w-3.5 h-3.5" />
+              <span>Mijn Portfolio</span>
+            </button>
+            <button
+              onClick={onOpenListingModal}
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Noteren</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {userRole === 'visitor' && (
+        <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-3.5 px-4 sm:px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-xs">
+          <div className="flex items-center gap-2.5 text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span>
+              <strong>Bezoeker Weergave:</strong> Verken publieke marktdata, orderboeken en noteringen.
+            </span>
+          </div>
+          <button
+            onClick={onOpenAuthModal}
+            className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 text-xs shrink-0"
+          >
+            <span>Log in om te handelen met escrow borg</span>
+            <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
       {/* 1. HERO SECTION */}
       <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/90 via-[#080C14] to-[#080C14] p-6 sm:p-10 lg:p-14 shadow-2xl">
         {/* Glow ambient effects */}
@@ -169,13 +264,31 @@ export function HomeTab({
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <button
-                onClick={onOpenListingModal}
-                className="px-5 py-3.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-sm transition flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4 text-emerald-400" />
-                <span>{isNl ? 'Account Noteren' : 'List Asset'}</span>
-              </button>
+              {userRole === 'visitor' ? (
+                <button
+                  onClick={onOpenAuthModal}
+                  className="px-5 py-3.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 font-bold text-sm transition flex items-center gap-2 shadow-md shadow-emerald-500/10"
+                >
+                  <User className="w-4 h-4 text-emerald-400" />
+                  <span>{isNl ? 'Start als Handelaar' : 'Join as Trader'}</span>
+                </button>
+              ) : userRole === 'admin' ? (
+                <button
+                  onClick={() => onNavigate('admin')}
+                  className="px-5 py-3.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-emerald-400 border border-emerald-500/40 font-bold text-sm transition flex items-center gap-2 shadow-md shadow-emerald-500/10"
+                >
+                  <ShieldAlert className="w-4 h-4 text-emerald-400" />
+                  <span>Admin Controle</span>
+                </button>
+              ) : (
+                <button
+                  onClick={onOpenListingModal}
+                  className="px-5 py-3.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-sm transition flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4 text-emerald-400" />
+                  <span>{isNl ? 'Account Noteren' : 'List Asset'}</span>
+                </button>
+              )}
             </div>
 
             {/* Quick trust metrics row */}

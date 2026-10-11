@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { PortfolioItem, WalletTransaction } from '../../types';
-import { Wallet, ShieldCheck, Clock, CheckCircle2, Pause, Play, Plus, ArrowUpRight } from 'lucide-react';
+import { PortfolioItem, WalletTransaction, UserRole } from '../../types';
+import { Wallet, ShieldCheck, Clock, CheckCircle2, Pause, Play, Plus, ArrowUpRight, Lock, User, ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
 
 interface PortfolioTabProps {
   portfolio: PortfolioItem[];
@@ -9,6 +9,9 @@ interface PortfolioTabProps {
   onOpenListingModal: () => void;
   onOpenWalletModal: () => void;
   onToggleAccountStatus: (id: string) => void;
+  userRole?: UserRole;
+  onOpenAuthModal?: () => void;
+  onSwitchToTraderDemo?: () => void;
 }
 
 export function PortfolioTab({
@@ -17,9 +20,99 @@ export function PortfolioTab({
   onClaimYield,
   onOpenListingModal,
   onOpenWalletModal,
-  onToggleAccountStatus
+  onToggleAccountStatus,
+  userRole = 'trader',
+  onOpenAuthModal,
+  onSwitchToTraderDemo
 }: PortfolioTabProps) {
   const [claimedAlert, setClaimedAlert] = useState<boolean>(false);
+
+  // If visitor, show dedicated conversion and preview screen
+  if (userRole === 'visitor') {
+    return (
+      <div className="space-y-8 font-sans py-4">
+        {/* Guest Portfolio Teaser Hero */}
+        <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/90 via-[#0F172A] to-[#080C14] p-8 sm:p-12 shadow-2xl">
+          <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+
+          <div className="max-w-3xl space-y-5 relative">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs">
+              <Lock className="w-3.5 h-3.5" />
+              <span>HANDELAARS OMGEVING • INLOGGEN VEREIST</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              Jouw Persoonlijke Handelskassa &amp; <br />
+              <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                Asset Portfolio Beheer
+              </span>
+            </h2>
+
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+              Als geregistreerde handelaar op Logs Rent beheer je hier al je actieve huurcontracten,
+              volg je realtime passieve dagopbrengsten, beheer je escrow borgsommen en vraag je directe
+              uitbetalingen aan naar je bank of crypto wallet.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-3 font-mono text-xs">
+              <button
+                onClick={onOpenAuthModal}
+                className="px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition flex items-center gap-2.5 shadow-lg shadow-emerald-500/20"
+              >
+                <User className="w-4 h-4 text-slate-950" />
+                <span>Inloggen / Account Maken</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              {onSwitchToTraderDemo && (
+                <button
+                  onClick={onSwitchToTraderDemo}
+                  className="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold transition flex items-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  <span>Bekijk Demo Handelaar Portfolio</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 3 Pillars of Trader Portfolio */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 font-mono text-xs">
+          <div className="bg-[#0F172A] border border-slate-800 p-6 rounded-2xl shadow-xl space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <h4 className="text-white font-bold text-sm">Passief Dagelijks Huurrendement</h4>
+            <p className="text-slate-400 font-sans text-xs leading-relaxed">
+              Verhuur overtollige accounts per dag en ontvang automatisch huurinkomsten rechtstreeks in je Handelskassa.
+            </p>
+          </div>
+
+          <div className="bg-[#0F172A] border border-slate-800 p-6 rounded-2xl shadow-xl space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <h4 className="text-white font-bold text-sm">100% Escrow Borgsom Garantie</h4>
+            <p className="text-slate-400 font-sans text-xs leading-relaxed">
+              Alle huurders leggen een verplichte borg in escrow. Bij contractbreuk of wijzigingen keert het systeem de borg aan jou uit.
+            </p>
+          </div>
+
+          <div className="bg-[#0F172A] border border-slate-800 p-6 rounded-2xl shadow-xl space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <h4 className="text-white font-bold text-sm">Directe Handelskassa Wallet</h4>
+            <p className="text-slate-400 font-sans text-xs leading-relaxed">
+              Stort of neem direct liquiditeit op via SEPA, iDEAL of Crypto met transparante transactieoverzichten.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const totalPortfolioValue = portfolio.reduce((acc, item) => acc + item.currentValue, 0);
   const totalDailyRent = portfolio

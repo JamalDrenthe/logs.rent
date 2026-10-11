@@ -256,7 +256,19 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
                 }}
                 className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-xl border border-slate-700 transition text-[11px]"
               >
-                Direct Demo Inloggen als Pro Handelaar
+                Direct Demo Inloggen als Handelaar
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('info@jamaldrenthe.com');
+                  onLoginSuccess('info@jamaldrenthe.com');
+                  onClose();
+                }}
+                className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 py-2 rounded-xl border border-emerald-500/30 transition text-[11px] font-bold"
+              >
+                Inloggen als Platform Admin (info@jamaldrenthe.com)
               </button>
             </form>
           </>

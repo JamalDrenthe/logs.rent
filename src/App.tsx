@@ -14,7 +14,8 @@ import {
   RecentTrade,
   PortfolioItem,
   DisputeItem,
-  WalletTransaction
+  WalletTransaction,
+  UserRole
 } from './types';
 import { Logo } from './components/Logo';
 import { WalletModal } from './components/WalletModal';
@@ -49,6 +50,7 @@ import {
   ShieldCheck,
   ShieldAlert,
   Code,
+  Eye,
   EyeOff,
   Plus,
   User,
@@ -86,6 +88,17 @@ export default function App() {
   const [userBalance, setUserBalance] = useState<number>(14250.0);
   const [unclaimedYield, setUnclaimedYield] = useState<number>(285.0);
   const [currentUser, setCurrentUser] = useState<string | null>(() => auth.currentUser?.email ?? null);
+
+  const userRole: UserRole =
+    !currentUser
+      ? 'visitor'
+      : currentUser === 'info@jamaldrenthe.com'
+      ? 'admin'
+      : 'trader';
+
+  const isAdmin = userRole === 'admin';
+  const isTrader = userRole === 'trader';
+  const isVisitor = userRole === 'visitor';
 
   // Modals state
   const [isWalletOpen, setIsWalletOpen] = useState<boolean>(false);
@@ -161,9 +174,24 @@ export default function App() {
 
   // Open trade modal with pre-filled price and mode
   const handleOpenTradeModal = (mode: 'buy' | 'rent' | 'bid', price?: number) => {
+    if (userRole === 'visitor') {
+      triggerToast('Log in als handelaar om direct orders te plaatsen met Escrow borg.');
+      setIsAuthOpen(true);
+      return;
+    }
     setBidModalMode(mode);
     setBidModalPrice(price);
     setIsBidModalOpen(true);
+  };
+
+  // Open listing modal guarded for visitors
+  const handleOpenListing = () => {
+    if (userRole === 'visitor') {
+      triggerToast('Log in als handelaar om een account te noteren op de beurs.');
+      setIsAuthOpen(true);
+      return;
+    }
+    setIsListingOpen(true);
   };
 
   // Execute trade handler
@@ -299,8 +327,6 @@ export default function App() {
     setWalletTransactions((prev) => [tx, ...prev]);
   };
 
-  const isAdmin = currentUser === 'info@jamaldrenthe.com';
-
   const navTabs = [
     { key: 'home', label: 'Home', icon: Home },
     { key: 'logs', label: 'Logs', icon: Store },
@@ -318,11 +344,18 @@ export default function App() {
     { key: 'contact', label: 'Contact', icon: Mail }
   ];
 
+  const visibleTabKeys =
+    userRole === 'visitor'
+      ? ['home', 'logs', 'rent', 'investbotiq', 'valuatie']
+      : userRole === 'trader'
+      ? ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie']
+      : ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'];
+
   return (
     <div className={`${theme === 'light' ? 'theme-light' : ''} min-w-0 overflow-x-hidden bg-[#080C14] text-slate-200 min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300`}>
-      {/* Top Ticker Bar with dynamic price action */}
-      <div className="bg-slate-950 border-b border-slate-800 py-1.5 text-xs font-mono text-slate-400 overflow-hidden select-none">
-        <div className="w-full overflow-hidden whitespace-nowrap">
+      {/* Top Ticker Bar with dynamic price action & Role Preview Switcher */}
+      <div className="bg-slate-950 border-b border-slate-800 py-1.5 text-xs font-mono text-slate-400 select-none flex items-center justify-between px-3 sm:px-6">
+        <div className="overflow-hidden whitespace-nowrap min-w-0 flex-1 mr-4">
           <div className="animate-ticker flex items-center gap-8">
             {accounts.concat(accounts).map((acc, index) => (
               <span
@@ -346,6 +379,58 @@ export default function App() {
                 <span className="text-slate-600">•</span>
               </span>
             ))}
+          </div>
+        </div>
+
+        {/* Dynamic Role Selector Pill */}
+        <div className="hidden lg:flex items-center gap-2 shrink-0 text-[10px]">
+          <span className="text-slate-500 uppercase font-bold text-[9px] tracking-wider">Rol:</span>
+          <div className="inline-flex rounded-lg bg-slate-900 border border-slate-800 p-0.5">
+            <button
+              onClick={() => {
+                setCurrentUser(null);
+                triggerToast('Weergave: Bezoeker (Gast)');
+              }}
+              className={`px-2 py-0.5 rounded-md transition flex items-center gap-1 ${
+                userRole === 'visitor'
+                  ? 'bg-slate-800 text-white font-bold border border-slate-700 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Bekijk hoe een anonieme bezoeker logs.rent ervaart"
+            >
+              <Eye className="w-3 h-3 text-cyan-400" />
+              <span>Bezoeker</span>
+            </button>
+            <button
+              onClick={() => {
+                setCurrentUser('trader_pro@logs.rent');
+                triggerToast('Weergave: Handelaar (trader_pro@logs.rent)');
+              }}
+              className={`px-2 py-0.5 rounded-md transition flex items-center gap-1 ${
+                userRole === 'trader'
+                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Bekijk hoe een actieve handelaar logs.rent ervaart"
+            >
+              <Wallet className="w-3 h-3 text-cyan-400" />
+              <span>Handelaar</span>
+            </button>
+            <button
+              onClick={() => {
+                setCurrentUser('info@jamaldrenthe.com');
+                triggerToast('Weergave: Platform Admin (info@jamaldrenthe.com)');
+              }}
+              className={`px-2 py-0.5 rounded-md transition flex items-center gap-1 ${
+                userRole === 'admin'
+                  ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Bekijk hoe platform admin Jamal Drenthe logs.rent ervaart"
+            >
+              <ShieldAlert className="w-3 h-3 text-emerald-400" />
+              <span>Admin</span>
+            </button>
           </div>
         </div>
       </div>
@@ -376,7 +461,7 @@ export default function App() {
 
           {/* Navigation Tabs bar */}
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden text-xs font-mono 2xl:flex">
-            {navTabs.filter((tab) => ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'].includes(tab.key)).map((tab) => {
+            {navTabs.filter((tab) => visibleTabKeys.includes(tab.key)).map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
               const isAdminTab = tab.key === 'admin';
@@ -412,46 +497,67 @@ export default function App() {
 
           {/* Actions: Handelskassa Wallet Module & Account Noteren */}
           <div className="ml-auto flex items-center justify-end gap-1.5 shrink-0 sm:gap-2.5">
-            {/* Handelskassa Saldo Module with Deposit/Withdraw trigger */}
+            {/* If Trader or Admin: Show Handelskassa Saldo */}
+            {userRole !== 'visitor' ? (
               <div
-              onClick={() => setIsWalletOpen(true)}
-              className="hidden md:flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm group"
-              title="Klik voor storting of opname uit de Handelskassa"
-            >
-              <div className="text-right font-mono">
-                <span className="text-[9px] text-slate-400 block leading-none">
-                  {copy.wallet}
-                </span>
-                <span className="text-xs font-bold text-emerald-400">
-                  € {userBalance.toLocaleString('nl-NL')},00
-                </span>
+                onClick={() => setIsWalletOpen(true)}
+                className="hidden md:flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm group"
+                title="Klik voor storting of opname uit de Handelskassa"
+              >
+                <div className="text-right font-mono">
+                  <span className="text-[9px] text-slate-400 block leading-none">
+                    {copy.wallet}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-400">
+                    € {userBalance.toLocaleString('nl-NL')},00
+                  </span>
+                </div>
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                  <Plus className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
-                <Plus className="w-3.5 h-3.5" />
-              </div>
-            </div>
+            ) : (
+              /* If Visitor: Show Start als Handelaar button */
+              <button
+                onClick={() => setIsAuthOpen(true)}
+                className="hidden sm:flex bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold text-xs px-3.5 py-2 rounded-xl transition items-center gap-1.5 font-mono shadow-sm"
+              >
+                <Store className="w-3.5 h-3.5" />
+                <span>Start als Handelaar</span>
+              </button>
+            )}
 
-            {/* Noteren button */}
-            <button
-              onClick={() => setIsListingOpen(true)}
-              className="hidden sm:flex bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-500/20 font-mono"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{copy.list}</span>
-            </button>
+            {/* Noteren button (only if trader or admin) */}
+            {userRole !== 'visitor' ? (
+              <button
+                onClick={handleOpenListing}
+                className="hidden sm:flex bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-500/20 font-mono"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{copy.list}</span>
+              </button>
+            ) : null}
 
             {/* User Login/Auth trigger */}
             <button
               onClick={() => setIsAuthOpen(true)}
               className={`text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-mono border ${
-                currentUser === 'info@jamaldrenthe.com'
+                userRole === 'admin'
                   ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-bold'
+                  : userRole === 'trader'
+                  ? 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold'
                   : 'bg-[#0F172A] hover:bg-slate-800 text-slate-200 border-slate-700'
               }`}
             >
-              <User className={`w-3.5 h-3.5 ${currentUser === 'info@jamaldrenthe.com' ? 'text-emerald-400' : 'text-cyan-400'}`} />
+              {userRole === 'admin' ? (
+                <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" />
+              ) : userRole === 'trader' ? (
+                <User className="w-3.5 h-3.5 text-cyan-400" />
+              ) : (
+                <User className="w-3.5 h-3.5 text-slate-400" />
+              )}
               <span className="hidden sm:inline">
-                {currentUser ? (currentUser === 'info@jamaldrenthe.com' ? 'Admin' : copy.trader) : copy.login}
+                {userRole === 'admin' ? 'Admin' : userRole === 'trader' ? 'Handelaar' : copy.login}
               </span>
             </button>
             <button
@@ -481,7 +587,7 @@ export default function App() {
 
       {/* Mobile Horizontal Navigation Tabs */}
       <div className="2xl:hidden bg-[#0F172A] border-b border-slate-800 px-3 py-2.5 overflow-x-auto scrollbar-none flex flex-nowrap items-center justify-start gap-1 text-xs font-mono">
-        {navTabs.filter((tab) => ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'].includes(tab.key)).map((tab) => {
+        {navTabs.filter((tab) => visibleTabKeys.includes(tab.key)).map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
           const isAdminTab = tab.key === 'admin';
@@ -524,9 +630,12 @@ export default function App() {
               setSelectedAccount(acc);
               handleOpenTradeModal(mode, mode === 'buy' ? acc.price : acc.rentPerDay);
             }}
-            onOpenListingModal={() => setIsListingOpen(true)}
+            onOpenListingModal={handleOpenListing}
             onOpenHandoffModal={() => setIsHandoffOpen(true)}
             language={language}
+            userRole={userRole}
+            currentUser={currentUser}
+            onOpenAuthModal={() => setIsAuthOpen(true)}
           />
         )}
 
@@ -558,7 +667,7 @@ export default function App() {
         )}
 
         {activeTab === 'valuatie' && (
-          <ValuatieTab onOpenListingModal={() => setIsListingOpen(true)} />
+          <ValuatieTab onOpenListingModal={handleOpenListing} />
         )}
 
         {activeTab === 'investbotiq' && <InvestbotiqTab />}
@@ -568,9 +677,15 @@ export default function App() {
             portfolio={portfolio}
             unclaimedYield={unclaimedYield}
             onClaimYield={handleClaimYield}
-            onOpenListingModal={() => setIsListingOpen(true)}
+            onOpenListingModal={handleOpenListing}
             onOpenWalletModal={() => setIsWalletOpen(true)}
             onToggleAccountStatus={handleTogglePortfolioStatus}
+            userRole={userRole}
+            onOpenAuthModal={() => setIsAuthOpen(true)}
+            onSwitchToTraderDemo={() => {
+              setCurrentUser('trader_pro@logs.rent');
+              triggerToast('Demo Handelaar sessie geactiveerd.');
+            }}
           />
         )}
 
@@ -580,7 +695,7 @@ export default function App() {
             disputes={disputes}
             userBalance={userBalance}
             onResolveDispute={handleResolveDispute}
-            onOpenListingModal={() => setIsListingOpen(true)}
+            onOpenListingModal={handleOpenListing}
             language={language}
           />
         )}
