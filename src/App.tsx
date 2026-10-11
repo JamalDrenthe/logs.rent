@@ -28,6 +28,7 @@ import { auth } from './lib/firebase';
 import { HomeTab } from './components/tabs/HomeTab';
 import { BeursTab } from './components/tabs/BeursTab';
 import { CatalogusTab } from './components/tabs/CatalogusTab';
+import { AdminTab } from './components/tabs/AdminTab';
 import { ValuatieTab } from './components/tabs/ValuatieTab';
 import { InvestbotiqTab } from './components/tabs/InvestbotiqTab';
 import { PortfolioTab } from './components/tabs/PortfolioTab';
@@ -298,6 +299,8 @@ export default function App() {
     setWalletTransactions((prev) => [tx, ...prev]);
   };
 
+  const isAdmin = currentUser === 'info@jamaldrenthe.com';
+
   const navTabs = [
     { key: 'home', label: 'Home', icon: Home },
     { key: 'logs', label: 'Logs', icon: Store },
@@ -305,6 +308,7 @@ export default function App() {
     { key: 'portfolio', label: language === 'nl' ? 'Portfolio' : 'Portfolio', icon: Wallet },
     { key: 'investbotiq', label: 'Investbotiq', icon: Bot },
     { key: 'valuatie', label: language === 'nl' ? 'Valuatie' : 'Valuation', icon: Calculator },
+    ...(isAdmin ? [{ key: 'admin', label: 'Admin', icon: ShieldAlert }] : []),
     { key: 'escrow', label: 'Escrow & 2FA', icon: ShieldCheck },
     { key: 'dispuut', label: language === 'nl' ? 'Dispuut Centrum' : 'Dispute Center', icon: ShieldAlert },
     { key: 'api', label: 'API Portal', icon: Code },
@@ -372,9 +376,10 @@ export default function App() {
 
           {/* Navigation Tabs bar */}
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 overflow-hidden text-xs font-mono 2xl:flex">
-            {navTabs.filter((tab) => ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie'].includes(tab.key)).map((tab) => {
+            {navTabs.filter((tab) => ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'].includes(tab.key)).map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
+              const isAdminTab = tab.key === 'admin';
               return (
                 <button
                   key={tab.key}
@@ -385,12 +390,21 @@ export default function App() {
                         ? 'text-white bg-slate-800 border border-slate-700 font-bold shadow-sm'
                         : tab.key === 'logs'
                         ? 'text-cyan-400 bg-slate-800 border border-slate-700 font-bold shadow-sm'
+                        : isAdminTab
+                        ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 font-bold shadow-sm'
                         : 'text-emerald-400 bg-slate-800 border border-slate-700 font-bold shadow-sm'
+                      : isAdminTab
+                      ? 'text-emerald-400/80 hover:text-emerald-300 hover:bg-emerald-500/10'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
+                  {isAdminTab && (
+                    <span className="bg-emerald-500/20 text-emerald-400 text-[9px] px-1 py-0.5 rounded font-mono font-bold leading-none">
+                      PRO
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -467,9 +481,10 @@ export default function App() {
 
       {/* Mobile Horizontal Navigation Tabs */}
       <div className="2xl:hidden bg-[#0F172A] border-b border-slate-800 px-3 py-2.5 overflow-x-auto scrollbar-none flex flex-nowrap items-center justify-start gap-1 text-xs font-mono">
-        {navTabs.filter((tab) => ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie'].includes(tab.key)).map((tab) => {
+        {navTabs.filter((tab) => ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'].includes(tab.key)).map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
+          const isAdminTab = tab.key === 'admin';
           return (
             <button
               key={tab.key}
@@ -480,7 +495,11 @@ export default function App() {
                     ? 'text-white bg-slate-800 font-bold border border-slate-700'
                     : tab.key === 'logs'
                     ? 'text-cyan-400 bg-slate-800 font-bold border border-slate-700'
+                    : isAdminTab
+                    ? 'text-emerald-400 bg-emerald-500/10 font-bold border border-emerald-500/30'
                     : 'text-emerald-400 bg-slate-800 font-bold border border-slate-700'
+                  : isAdminTab
+                  ? 'text-emerald-400/80'
                   : 'text-slate-400'
               }`}
             >
@@ -490,63 +509,6 @@ export default function App() {
           );
         })}
       </div>
-
-      {/* Market overview on Rent tab */}
-      {(activeTab === 'rent' || activeTab === 'beurs') && (
-        <section className="border-b border-slate-800/80 bg-gradient-to-b from-slate-950 via-[#080C14] to-[#080C14] px-3 py-6 sm:px-6 lg:px-8 font-mono">
-          <div className="mx-auto grid max-w-7xl min-w-0 gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.95fr)] lg:gap-6">
-            <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-5 sm:p-7">
-              <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-emerald-400/10 blur-3xl" />
-              <div className="relative flex h-full flex-col justify-between gap-8">
-                <div>
-                  <div className="mb-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                    {copy.heroEyebrow}
-                  </div>
-                  <h1 className="max-w-md font-sans text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
-                    {copy.heroTitle}
-                  </h1>
-                  <p className="mt-4 max-w-lg font-sans text-sm leading-6 text-slate-400">
-                    {copy.heroDescription}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    onClick={() => setActiveTab('logs')}
-                    className="rounded-xl bg-cyan-400 px-4 py-2.5 text-xs font-bold text-slate-950 transition hover:bg-cyan-300"
-                  >
-                    {language === 'nl' ? 'Bekijk alle logs' : 'Browse logs'}
-                  </button>
-                  <span className="text-xs text-slate-400">{copy.activeListings}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-              {[
-                { label: copy.stats[0], value: '€ 482.910', note: '+14.8%', color: 'text-emerald-400' },
-                { label: copy.stats[1], value: '3.492 Stuks', note: copy.liveMarket, color: 'text-cyan-400' },
-                { label: copy.stats[2], value: '€ 128.450', note: '100% Guaranteed', color: 'text-emerald-400' },
-                { label: copy.stats[3], value: '64.2% A-Grade', note: '0% Ban Risk', color: 'text-emerald-400' },
-                { label: copy.stats[4], value: '41.5% Bot Trades', note: 'High-Freq', color: 'text-amber-400' }
-              ].map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className={`min-w-0 rounded-2xl border border-slate-800 bg-[#0F172A]/70 p-4 sm:p-5 ${
-                    index === 4 ? 'sm:col-span-2' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="min-w-0 truncate text-[11px] text-slate-400">{stat.label}</span>
-                    <span className={`shrink-0 text-[10px] font-bold ${stat.color}`}>{stat.note}</span>
-                  </div>
-                  <div className={`mt-3 text-xl font-bold tracking-tight ${stat.color}`}>{stat.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Main Content View Switcher */}
       <main className="flex-grow max-w-7xl w-full min-w-0 mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -609,6 +571,17 @@ export default function App() {
             onOpenListingModal={() => setIsListingOpen(true)}
             onOpenWalletModal={() => setIsWalletOpen(true)}
             onToggleAccountStatus={handleTogglePortfolioStatus}
+          />
+        )}
+
+        {activeTab === 'admin' && (
+          <AdminTab
+            accounts={accounts}
+            disputes={disputes}
+            userBalance={userBalance}
+            onResolveDispute={handleResolveDispute}
+            onOpenListingModal={() => setIsListingOpen(true)}
+            language={language}
           />
         )}
 

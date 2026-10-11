@@ -42,7 +42,39 @@ export function BeursTab({
   const [timeframe, setTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('1W');
 
   return (
-    <div className="min-w-0 space-y-6">
+    <div className="min-w-0 space-y-5">
+      {/* Asset Quick Selector Ribbon */}
+      <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-3 shadow-xl flex items-center gap-2 overflow-x-auto scrollbar-none font-mono text-xs">
+        <span className="text-[11px] text-slate-500 uppercase px-2 shrink-0 flex items-center gap-1.5 font-bold">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>Markt:</span>
+        </span>
+        {accounts.map((acc) => {
+          const isSelected = acc.id === selectedAccount.id;
+          return (
+            <button
+              key={acc.id}
+              onClick={() => onSelectAccount(acc)}
+              className={`shrink-0 px-3 py-1.5 rounded-xl transition flex items-center gap-2 border ${
+                isSelected
+                  ? 'bg-slate-800 text-emerald-400 border-emerald-500/40 font-bold shadow-md'
+                  : 'bg-[#080C14] text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white'
+              }`}
+            >
+              <span className="text-cyan-400 font-bold">{acc.platform}</span>
+              <span className="text-white">€{acc.price}</span>
+              <span
+                className={`text-[10px] font-bold ${
+                  acc.isPositiveChange ? 'text-emerald-400' : 'text-rose-400'
+                }`}
+              >
+                {acc.change24h}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left 2 Cols: Main Chart, Account Header, Quick Actions */}
         <div className="min-w-0 lg:col-span-2 bg-[#0F172A] border border-slate-800 rounded-2xl p-3 sm:p-5 flex flex-col justify-between shadow-xl">
