@@ -1,14 +1,22 @@
 import { useState } from 'react';
-import { AccountListing, AccountCategory, AccountGrade } from '../../types';
-import { Search, Filter, ShieldCheck, ArrowRight, TrendingUp, TrendingDown, ShoppingBag, LayoutGrid, List, CheckCircle2, Lock, Eye } from 'lucide-react';
+import { AccountListing, AccountCategory, AccountGrade, UserRole } from '../../types';
+import { Search, Filter, ShieldCheck, ArrowRight, TrendingUp, TrendingDown, ShoppingBag, LayoutGrid, List, CheckCircle2, Lock, Eye, ShieldAlert, Sliders } from 'lucide-react';
 
 interface CatalogusTabProps {
   accounts: AccountListing[];
   onSelectAccount: (account: AccountListing) => void;
   onOpenTradeModal: (account: AccountListing, mode: 'buy' | 'rent') => void;
+  userRole?: UserRole;
+  onModerateListing?: (accountId: number, newStatus: 'available' | 'rented') => void;
 }
 
-export function CatalogusTab({ accounts, onSelectAccount, onOpenTradeModal }: CatalogusTabProps) {
+export function CatalogusTab({
+  accounts,
+  onSelectAccount,
+  onOpenTradeModal,
+  userRole = 'visitor',
+  onModerateListing
+}: CatalogusTabProps) {
   const [search, setSearch] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedGrade, setSelectedGrade] = useState<string>('all');
@@ -58,6 +66,35 @@ export function CatalogusTab({ accounts, onSelectAccount, onOpenTradeModal }: Ca
           </span>
         </div>
       </div>
+
+      {/* Role Context Bar */}
+      {userRole === 'admin' && (
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-emerald-400">
+          <div className="flex items-center gap-2.5">
+            <ShieldAlert className="w-4 h-4 shrink-0 text-emerald-400" />
+            <span>
+              <strong>Admin Toezichtsmodus:</strong> U heeft directe beheerrechten om listings te pauzeren, heractiveren en risicoprofielen te modereren.
+            </span>
+          </div>
+          <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-500/30 font-bold uppercase">
+            Platform Moderator
+          </span>
+        </div>
+      )}
+
+      {userRole === 'trader' && (
+        <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-cyan-300">
+          <div className="flex items-center gap-2.5">
+            <ShoppingBag className="w-4 h-4 shrink-0 text-cyan-400" />
+            <span>
+              <strong>Handelaarsaccount Actief:</strong> Koop accounts direct in permanent eigendom (incl. direct inloggegevens in Portfolio) of huur per dag met escrow borg.
+            </span>
+          </div>
+          <span className="text-[10px] bg-cyan-500/20 text-cyan-400 px-2.5 py-1 rounded-lg border border-cyan-500/30 font-bold uppercase">
+            Geverifieerde Handelaar
+          </span>
+        </div>
+      )}
 
       {/* Search & Filter Header Bar */}
       <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4">
@@ -213,27 +250,57 @@ export function CatalogusTab({ accounts, onSelectAccount, onOpenTradeModal }: Ca
                       € {acc.rentPerDay}/dag
                     </td>
                     <td className="p-3.5 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => onSelectAccount(acc)}
-                          className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition"
-                          title="Bekijk op de Beurs"
-                        >
-                          Beurs
-                        </button>
-                        <button
-                          onClick={() => onOpenTradeModal(acc, 'buy')}
-                          className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition"
-                        >
-                          Koop
-                        </button>
-                        <button
-                          onClick={() => onOpenTradeModal(acc, 'rent')}
-                          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition"
-                        >
-                          Huur
-                        </button>
-                      </div>
+                      {userRole === 'admin' ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => onSelectAccount(acc)}
+                            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition"
+                            title="Bekijk op de Beurs"
+                          >
+                            Beurs
+                          </button>
+                          <button
+                            onClick={() =>
+                              onModerateListing?.(
+                                acc.id,
+                                acc.status === 'available' ? 'rented' : 'available'
+                              )
+                            }
+                            className={`font-bold text-[11px] px-2.5 py-1.5 rounded-lg border transition ${
+                              acc.status === 'available'
+                                ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                            }`}
+                            title="Admin actie: Wijzig publicatiestatus"
+                          >
+                            {acc.status === 'available' ? 'Pauzeer' : 'Heractiveer'}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => onSelectAccount(acc)}
+                            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition"
+                            title="Bekijk op de Beurs"
+                          >
+                            Beurs
+                          </button>
+                          <button
+                            onClick={() => onOpenTradeModal(acc, 'buy')}
+                            className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-sm"
+                            title="Koop direct in eigendom (inloggegevens direct beschikbaar)"
+                          >
+                            Koop Direct
+                          </button>
+                          <button
+                            onClick={() => onOpenTradeModal(acc, 'rent')}
+                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-sm"
+                            title="Huur met dagtarief en borgbescherming"
+                          >
+                            Huur
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -321,25 +388,57 @@ export function CatalogusTab({ accounts, onSelectAccount, onOpenTradeModal }: Ca
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => onSelectAccount(acc)}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs px-2.5 py-2 rounded-xl transition"
-                    title="Bekijk op de Beurs"
-                  >
-                    Beurs
-                  </button>
-                  <button
-                    onClick={() => onOpenTradeModal(acc, 'buy')}
-                    className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-2.5 py-2 rounded-xl transition"
-                  >
-                    Koop
-                  </button>
-                  <button
-                    onClick={() => onOpenTradeModal(acc, 'rent')}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-2.5 py-2 rounded-xl transition shadow-md shadow-emerald-500/15"
-                  >
-                    Huur
-                  </button>
+                  {userRole === 'admin' ? (
+                    <>
+                      <button
+                        onClick={() => onSelectAccount(acc)}
+                        className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs px-2.5 py-2 rounded-xl transition"
+                        title="Bekijk op de Beurs"
+                      >
+                        Beurs
+                      </button>
+                      <button
+                        onClick={() =>
+                          onModerateListing?.(
+                            acc.id,
+                            acc.status === 'available' ? 'rented' : 'available'
+                          )
+                        }
+                        className={`font-bold text-xs px-3 py-2 rounded-xl border transition ${
+                          acc.status === 'available'
+                            ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30'
+                            : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        }`}
+                        title="Admin: Wijzig status"
+                      >
+                        {acc.status === 'available' ? 'Pauzeer' : 'Heractiveer'}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => onSelectAccount(acc)}
+                        className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs px-2.5 py-2 rounded-xl transition"
+                        title="Bekijk op de Beurs"
+                      >
+                        Beurs
+                      </button>
+                      <button
+                        onClick={() => onOpenTradeModal(acc, 'buy')}
+                        className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl transition shadow-sm"
+                        title="Direct Kopen & Eigendom Overnemen"
+                      >
+                        Koop Nu
+                      </button>
+                      <button
+                        onClick={() => onOpenTradeModal(acc, 'rent')}
+                        className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl transition shadow-md shadow-emerald-500/15"
+                        title="Huren met Dagtarief"
+                      >
+                        Huur
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

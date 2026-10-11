@@ -71,11 +71,19 @@ export interface PortfolioItem {
   grade: AccountGrade;
   currentValue: number;
   dailyRent: number;
-  status: 'Actief Verhuurd' | 'Beschikbaar' | 'Gepauzeerd';
+  status: 'Actief Verhuurd' | 'Beschikbaar' | 'Gepauzeerd' | 'Eigendom (Gekocht)' | 'In Huur (Actief)';
+  type: 'KOOP' | 'HUUR' | 'NOTERING';
   totalEarned: number;
   escrowLocked: number;
   renterOrBuyer: string;
   contractEnds: string;
+  credentials?: {
+    username?: string;
+    email?: string;
+    passwordMasked?: string;
+    sessionCookies?: string;
+    twoFactorSecret?: string;
+  };
 }
 
 export interface DisputeItem {

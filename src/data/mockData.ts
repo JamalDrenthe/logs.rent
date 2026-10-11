@@ -307,7 +307,51 @@ export const INITIAL_TRADES: RecentTrade[] = [
 
 export const INITIAL_PORTFOLIO: PortfolioItem[] = [
   {
-    id: 'P-1',
+    id: 'P-OWN-1',
+    accountId: 5541,
+    accountTitle: 'Steam Account CS2 Prime & Dragon Lore [ID #5541]',
+    platform: 'Steam',
+    grade: 'C',
+    currentValue: 420,
+    dailyRent: 14,
+    status: 'Eigendom (Gekocht)',
+    type: 'KOOP',
+    totalEarned: 0,
+    escrowLocked: 0,
+    renterOrBuyer: 'Mijn Handelskassa (Volledig Eigendom)',
+    contractEnds: 'Permanent in Eigendom',
+    credentials: {
+      username: 'cs2_prime_collector_55',
+      email: 'oge_cs2_primary@privatemail.ch',
+      passwordMasked: '••••••••••••••••',
+      sessionCookies: 'steam_sec_token_99af2...381',
+      twoFactorSecret: 'JBSWY3DPEHPK3PXP'
+    }
+  },
+  {
+    id: 'P-LEASE-2',
+    accountId: 4021,
+    accountTitle: 'Uber Driver Profile 4.98 [ID #4021]',
+    platform: 'Uber',
+    grade: 'A',
+    currentValue: 2100,
+    dailyRent: 60,
+    status: 'In Huur (Actief)',
+    type: 'HUUR',
+    totalEarned: 0,
+    escrowLocked: 350,
+    renterOrBuyer: 'Mijn Handelskassa (Huurder)',
+    contractEnds: 'Nog 6 dagen',
+    credentials: {
+      username: 'uber_driver_pro_4021',
+      email: 'driver4021@logs.rent',
+      passwordMasked: '••••••••••••••••',
+      sessionCookies: 'uber_auth_sess_9021a...bc1',
+      twoFactorSecret: 'HXDMVJECJJWSRB3H'
+    }
+  },
+  {
+    id: 'P-RENT-3',
     accountId: 9812,
     accountTitle: 'TikTok Verified 85K [ID #9812]',
     platform: 'TikTok',
@@ -315,27 +359,14 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     currentValue: 1450,
     dailyRent: 35,
     status: 'Actief Verhuurd',
+    type: 'NOTERING',
     totalEarned: 245,
     escrowLocked: 250,
     renterOrBuyer: 'Investbotiq Agent #04',
     contractEnds: 'Nog 4 dagen'
   },
   {
-    id: 'P-2',
-    accountId: 4021,
-    accountTitle: 'Uber Driver Profile 4.98 [ID #4021]',
-    platform: 'Uber',
-    grade: 'A',
-    currentValue: 2100,
-    dailyRent: 60,
-    status: 'Actief Verhuurd',
-    totalEarned: 420,
-    escrowLocked: 350,
-    renterOrBuyer: 'Gebruiker #2910',
-    contractEnds: 'Nog 7 dagen'
-  },
-  {
-    id: 'P-3',
+    id: 'P-RENT-4',
     accountId: 3302,
     accountTitle: 'Facebook Ads Agency [ID #3302]',
     platform: 'Facebook',
@@ -343,6 +374,7 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     currentValue: 1200,
     dailyRent: 30,
     status: 'Actief Verhuurd',
+    type: 'NOTERING',
     totalEarned: 180,
     escrowLocked: 200,
     renterOrBuyer: 'MarketingBot Corp',

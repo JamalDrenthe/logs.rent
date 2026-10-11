@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AccountListing, OrderBookEntry, RecentTrade } from '../../types';
+import { AccountListing, OrderBookEntry, RecentTrade, UserRole } from '../../types';
 import { TradingChart } from '../TradingChart';
 import {
   TrendingUp,
@@ -15,7 +15,8 @@ import {
   AlertTriangle,
   Sparkles,
   Share2,
-  Lock
+  Lock,
+  ShieldAlert
 } from 'lucide-react';
 
 interface BeursTabProps {
@@ -27,6 +28,9 @@ interface BeursTabProps {
   recentTrades: RecentTrade[];
   onOpenTradeModal: (mode: 'buy' | 'rent' | 'bid', price?: number) => void;
   onOpenHandoffModal: () => void;
+  userRole?: UserRole;
+  onModerateListing?: (accountId: number, newStatus: 'available' | 'rented') => void;
+  onNavigateToDisputes?: () => void;
 }
 
 export function BeursTab({
@@ -37,7 +41,10 @@ export function BeursTab({
   orderBookBids,
   recentTrades,
   onOpenTradeModal,
-  onOpenHandoffModal
+  onOpenHandoffModal,
+  userRole = 'visitor',
+  onModerateListing,
+  onNavigateToDisputes
 }: BeursTabProps) {
   const [timeframe, setTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('1W');
 
@@ -176,30 +183,90 @@ export function BeursTab({
             <TradingChart account={selectedAccount} timeframe={timeframe} />
           </div>
 
-          {/* Quick Trade Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 pt-4 border-t border-slate-800">
-            <button
-              onClick={() => onOpenTradeModal('buy', selectedAccount.price)}
-              className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/15"
-            >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Koop Vraagprijs (€ {selectedAccount.price.toLocaleString('nl-NL')})</span>
-            </button>
-            <button
-              onClick={() => onOpenTradeModal('rent', selectedAccount.rentPerDay)}
-              className="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/15"
-            >
-              <Key className="w-4 h-4" />
-              <span>Huren voor € {selectedAccount.rentPerDay}/dag</span>
-            </button>
-            <button
-              onClick={() => onOpenTradeModal('bid', Math.round(selectedAccount.price * 0.95))}
-              className="bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2"
-            >
-              <Gavel className="w-4 h-4 text-amber-400" />
-              <span>Bod Plaatsen in Orderboek</span>
-            </button>
-          </div>
+          {/* Quick Trade Action Buttons or Admin Moderation Panel */}
+          {userRole === 'admin' ? (
+            <div className="mt-5 pt-4 border-t border-slate-800 space-y-3 font-mono">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                  <ShieldAlert className="w-4 h-4" />
+                  <span>Admin Toezicht: {selectedAccount.title} (ID #{selectedAccount.id})</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-400">Escrow Borg: € {selectedAccount.escrowBorg}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                      selectedAccount.status === 'available'
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                    }`}
+                  >
+                    {selectedAccount.status === 'available' ? 'ACTIEF IN CATALOGUS' : 'GEPAUZEERD / INACTIEF'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <button
+                  onClick={() =>
+                    onModerateListing?.(
+                      selectedAccount.id,
+                      selectedAccount.status === 'available' ? 'rented' : 'available'
+                    )
+                  }
+                  className={`py-2.5 px-3 rounded-xl font-bold text-xs border transition flex items-center justify-center gap-2 ${
+                    selectedAccount.status === 'available'
+                      ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border-amber-500/30'
+                      : 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border-emerald-500/30'
+                  }`}
+                >
+                  {selectedAccount.status === 'available' ? 'Pauzeer Listing (Offline)' : 'Heractiveer Listing'}
+                </button>
+
+                <button
+                  onClick={onOpenHandoffModal}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 px-3 rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-4 h-4 text-cyan-400" />
+                  <span>Inspecteer 2FA & Sessie</span>
+                </button>
+
+                <button
+                  onClick={onNavigateToDisputes}
+                  className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-2"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>Disputen & Borg Beheer</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 pt-4 border-t border-slate-800 font-mono">
+              <button
+                onClick={() => onOpenTradeModal('buy', selectedAccount.price)}
+                className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/15"
+                title="Koop direct in permanent eigendom (direct in Portfolio met inloggegevens)"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span>Koop Direct (€ {selectedAccount.price.toLocaleString('nl-NL')})</span>
+              </button>
+              <button
+                onClick={() => onOpenTradeModal('rent', selectedAccount.rentPerDay)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/15"
+                title="Huren per dag met escrow borgsom"
+              >
+                <Key className="w-4 h-4" />
+                <span>Huren (€ {selectedAccount.rentPerDay}/dag)</span>
+              </button>
+              <button
+                onClick={() => onOpenTradeModal('bid', Math.round(selectedAccount.price * 0.95))}
+                className="bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2"
+                title="Plaats een bod in het realtime orderboek"
+              >
+                <Gavel className="w-4 h-4 text-amber-400" />
+                <span>Bod Plaatsen</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Right Col: Interactive Order Book & Recent Executed Trades */}

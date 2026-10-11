@@ -232,26 +232,68 @@ export default function App() {
     };
     setRecentTrades((prev) => [newTrade, ...prev]);
 
-    // Add to portfolio if rented
-    if (tradeData.type === 'HUUR') {
+    // Add to portfolio if bought or rented
+    if (tradeData.type === 'KOOP') {
       const newPortItem: PortfolioItem = {
-        id: `P-${Date.now().toString().slice(-4)}`,
+        id: `P-BUY-${Date.now().toString().slice(-4)}`,
+        accountId: selectedAccount.id,
+        accountTitle: selectedAccount.title,
+        platform: selectedAccount.platform,
+        grade: selectedAccount.grade,
+        currentValue: tradeData.price,
+        dailyRent: selectedAccount.rentPerDay,
+        status: 'Eigendom (Gekocht)',
+        type: 'KOOP',
+        totalEarned: 0,
+        escrowLocked: 0,
+        renterOrBuyer: 'Mijn Handelskassa (Volledig Eigendom)',
+        contractEnds: 'Permanent in Eigendom',
+        credentials: {
+          username: `${selectedAccount.platform.toLowerCase()}_trader_${selectedAccount.id}`,
+          email: `oge_${selectedAccount.id}@privatemail.com`,
+          passwordMasked: '•••••••••••••••• (Verifieer in Handoff)',
+          sessionCookies: `lr_auth_token_${Date.now()}_sec_sess`,
+          twoFactorSecret: 'JBSWY3DPEHPK3PXP'
+        }
+      };
+      setPortfolio((prev) => [newPortItem, ...prev]);
+      setAccounts((prev) =>
+        prev.map((a) => (a.id === selectedAccount.id ? { ...a, status: 'rented' } : a))
+      );
+      triggerToast(`Account ID #${selectedAccount.id} gekocht en toegevoegd aan je Portfolio onder Eigendom!`);
+      setIsHandoffOpen(true);
+    } else if (tradeData.type === 'HUUR') {
+      const newPortItem: PortfolioItem = {
+        id: `P-LEASE-${Date.now().toString().slice(-4)}`,
         accountId: selectedAccount.id,
         accountTitle: selectedAccount.title,
         platform: selectedAccount.platform,
         grade: selectedAccount.grade,
         currentValue: selectedAccount.price,
         dailyRent: tradeData.price,
-        status: 'Actief Verhuurd',
+        status: 'In Huur (Actief)',
+        type: 'HUUR',
         totalEarned: 0,
         escrowLocked: tradeData.escrowBorg,
-        renterOrBuyer: 'Mijn Handelskassa',
-        contractEnds: `Nog ${tradeData.days || 7} dagen`
+        renterOrBuyer: 'Mijn Handelskassa (Huurder)',
+        contractEnds: `Nog ${tradeData.days || 7} dagen`,
+        credentials: {
+          username: `${selectedAccount.platform.toLowerCase()}_lease_${selectedAccount.id}`,
+          email: `lease_${selectedAccount.id}@logs.rent`,
+          passwordMasked: '•••••••••••••••• (Tijdelijke Sessie)',
+          sessionCookies: `lr_lease_cookie_${Date.now()}`,
+          twoFactorSecret: 'HXDMVJECJJWSRB3H'
+        }
       };
       setPortfolio((prev) => [newPortItem, ...prev]);
+      setAccounts((prev) =>
+        prev.map((a) => (a.id === selectedAccount.id ? { ...a, status: 'rented' } : a))
+      );
+      triggerToast(`Account ID #${selectedAccount.id} voor ${tradeData.days || 7} dagen gehuurd met Escrow borg!`);
+      setIsHandoffOpen(true);
+    } else {
+      triggerToast(`Bod van € ${tradeData.price},00 voor ${selectedAccount.title} in orderboek geplaatst!`);
     }
-
-    triggerToast(`Order voor ${selectedAccount.title} succesvol in Escrow geplaatst!`);
   };
 
   // Claim yield
@@ -278,11 +320,19 @@ export default function App() {
     triggerToast(`Account ID #${newListing.id} genoteerd op de beurs!`);
   };
 
-  // Toggle portfolio item status
+  // Toggle portfolio item status (Handelaar)
   const handleTogglePortfolioStatus = (id: string) => {
     setPortfolio((prev) =>
       prev.map((item) => {
         if (item.id === id) {
+          if (item.status === 'Eigendom (Gekocht)') {
+            return {
+              ...item,
+              status: 'Actief Verhuurd',
+              type: 'NOTERING',
+              contractEnds: 'Verhuurd op Beurs (Dagopbrengst)'
+            };
+          }
           const nextStatus =
             item.status === 'Actief Verhuurd' ? 'Gepauzeerd' : 'Actief Verhuurd';
           return { ...item, status: nextStatus };
@@ -290,7 +340,19 @@ export default function App() {
         return item;
       })
     );
-    triggerToast('Account verhuurstatus bijgewerkt.');
+    triggerToast('Account verhuurstatus bijgewerkt in je portfolio.');
+  };
+
+  // Moderate listing handler (Admin)
+  const handleModerateListing = (accountId: number, newStatus: 'available' | 'rented') => {
+    setAccounts((prev) =>
+      prev.map((a) => (a.id === accountId ? { ...a, status: newStatus } : a))
+    );
+    triggerToast(
+      newStatus === 'available'
+        ? `Listing ID #${accountId} is heractiveerd door Admin.`
+        : `Listing ID #${accountId} is offline/gepauzeerd gezet door Admin.`
+    );
   };
 
   // Resolve dispute
@@ -649,6 +711,9 @@ export default function App() {
             recentTrades={recentTrades}
             onOpenTradeModal={handleOpenTradeModal}
             onOpenHandoffModal={() => setIsHandoffOpen(true)}
+            userRole={userRole}
+            onModerateListing={handleModerateListing}
+            onNavigateToDisputes={() => setActiveTab('dispuut')}
           />
         )}
 
@@ -663,6 +728,8 @@ export default function App() {
               setSelectedAccount(acc);
               handleOpenTradeModal(mode, mode === 'buy' ? acc.price : acc.rentPerDay);
             }}
+            userRole={userRole}
+            onModerateListing={handleModerateListing}
           />
         )}
 
@@ -682,6 +749,8 @@ export default function App() {
             onToggleAccountStatus={handleTogglePortfolioStatus}
             userRole={userRole}
             onOpenAuthModal={() => setIsAuthOpen(true)}
+            onOpenHandoffModal={() => setIsHandoffOpen(true)}
+            onOpenDisputeModal={(_accId) => setActiveTab('dispuut')}
             onSwitchToTraderDemo={() => {
               setCurrentUser('trader_pro@logs.rent');
               triggerToast('Demo Handelaar sessie geactiveerd.');
