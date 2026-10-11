@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "logs-rent-dev",
+    "dev": "logs-rent-dev",
+    "prod": "logs-rent-prod"
+  }
+}

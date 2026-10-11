@@ -32,6 +32,29 @@ export function CatalogusTab({ accounts, onSelectAccount, onOpenTradeModal }: Ca
 
   return (
     <div className="space-y-6 font-sans">
+      {/* Logs Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-[#0F172A] to-cyan-950/30 border border-cyan-500/20 rounded-2xl p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-cyan-400">
+              LOGS &amp; ACCOUNTS MARKTPLAATS
+            </span>
+          </div>
+          <h2 className="text-xl font-bold text-white">
+            Geverifieerde Profielen &amp; Sessie-Logs
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Volledig eigendom inclusief Original Email (OGE), 2FA overdracht en escrow-bescherming.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-xs font-mono">
+          <span className="bg-[#080C14] border border-slate-800 px-3 py-1.5 rounded-xl text-slate-300">
+            <strong className="text-cyan-400">{filteredAccounts.length}</strong> Beschikbare Listings
+          </span>
+        </div>
+      </div>
+
       {/* Search & Filter Header Bar */}
       <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col lg:flex-row items-center justify-between gap-4">
         {/* Search Input */}
@@ -163,18 +186,25 @@ export function CatalogusTab({ accounts, onSelectAccount, onOpenTradeModal }: Ca
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => onSelectAccount(acc)}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs px-3 py-2 rounded-xl transition"
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs px-2.5 py-2 rounded-xl transition"
+                  title="Bekijk op de Beurs"
                 >
-                  Beurs Grafiek
+                  Beurs
+                </button>
+                <button
+                  onClick={() => onOpenTradeModal(acc, 'buy')}
+                  className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-2.5 py-2 rounded-xl transition"
+                >
+                  Koop
                 </button>
                 <button
                   onClick={() => onOpenTradeModal(acc, 'rent')}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl transition shadow-md shadow-emerald-500/15"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-2.5 py-2 rounded-xl transition shadow-md shadow-emerald-500/15"
                 >
-                  Huren
+                  Huur
                 </button>
               </div>
             </div>
