@@ -126,3 +126,22 @@ export interface WalletTransaction {
   status: 'Voltooid' | 'In Behandeling';
   isCredit: boolean;
 }
+
+export interface UserProfile {
+  fullName: string;
+  email: string;
+  phone: string;
+  iban: string;
+  bic?: string;
+  accountHolder: string;
+  bankName?: string;
+  companyName?: string;
+  kvkNumber?: string;
+  addressStreet: string;
+  addressCity: string;
+  addressPostalCode: string;
+  country: string;
+  isVerified: boolean;
+  lastUpdated?: string;
+}
+

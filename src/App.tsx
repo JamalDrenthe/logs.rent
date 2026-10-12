@@ -6,7 +6,8 @@ import {
   INITIAL_TRADES,
   INITIAL_PORTFOLIO,
   INITIAL_DISPUTES,
-  INITIAL_WALLET_TRANSACTIONS
+  INITIAL_WALLET_TRANSACTIONS,
+  INITIAL_USER_PROFILE
 } from './data/mockData';
 import {
   AccountListing,
@@ -15,7 +16,8 @@ import {
   PortfolioItem,
   DisputeItem,
   WalletTransaction,
-  UserRole
+  UserRole,
+  UserProfile
 } from './types';
 import { Logo } from './components/Logo';
 import { WalletModal } from './components/WalletModal';
@@ -50,6 +52,7 @@ import {
   Calculator,
   Bot,
   Wallet,
+  CreditCard,
   ShieldCheck,
   ShieldAlert,
   Code,
@@ -154,7 +157,10 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Sync to localStorage
+  const [userProfile, setUserProfile] = useState<UserProfile>(() =>
+    loadFromStorage('logs-rent-user-profile', INITIAL_USER_PROFILE)
+  );
+
   useEffect(() => {
     window.localStorage.setItem('logs-rent-accounts', JSON.stringify(accounts));
   }, [accounts]);
@@ -176,6 +182,9 @@ export default function App() {
   useEffect(() => {
     window.localStorage.setItem('logs-rent-trades', JSON.stringify(recentTrades));
   }, [recentTrades]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-user-profile', JSON.stringify(userProfile));
+  }, [userProfile]);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -477,6 +486,7 @@ export default function App() {
       window.localStorage.removeItem('logs-rent-txs');
       window.localStorage.removeItem('logs-rent-disputes');
       window.localStorage.removeItem('logs-rent-trades');
+      window.localStorage.removeItem('logs-rent-user-profile');
       setAccounts(INITIAL_ACCOUNTS);
       setPortfolio(INITIAL_PORTFOLIO);
       setUserBalance(14250.0);
@@ -484,6 +494,7 @@ export default function App() {
       setWalletTransactions(INITIAL_WALLET_TRANSACTIONS);
       setDisputes(INITIAL_DISPUTES);
       setRecentTrades(INITIAL_TRADES);
+      setUserProfile(INITIAL_USER_PROFILE);
       triggerToast('Demo data gereset naar fabrieksinstellingen.');
     }
   };
@@ -520,6 +531,12 @@ export default function App() {
   const handleUpdateBalance = (newBalance: number, tx: WalletTransaction) => {
     setUserBalance(newBalance);
     setWalletTransactions((prev) => [tx, ...prev]);
+  };
+
+  // Handle user profile and IBAN update
+  const handleUpdateUserProfile = (updated: UserProfile) => {
+    setUserProfile(updated);
+    triggerToast('Accountgegevens en IBAN uitbetalingsrekening succesvol opgeslagen.');
   };
 
   const navTabs = [
@@ -627,6 +644,17 @@ export default function App() {
               <span>Admin</span>
             </button>
           </div>
+
+          {userRole !== 'visitor' && userProfile.iban && (
+            <span
+              onClick={() => setActiveTab('portfolio')}
+              className="cursor-pointer inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono font-bold hover:bg-emerald-500/20 transition"
+              title={`SEPA IBAN Gekoppeld: ${userProfile.iban} (t.n.v. ${userProfile.accountHolder || userProfile.fullName})`}
+            >
+              <CreditCard className="w-3 h-3 text-emerald-400" />
+              <span>IBAN: {userProfile.iban.slice(0, 4)} •••• {userProfile.iban.slice(-4)}</span>
+            </span>
+          )}
         </div>
       </div>
 
@@ -901,6 +929,8 @@ export default function App() {
               triggerToast('Demo Handelaar sessie geactiveerd.');
             }}
             onUpdateAccount={handleUpdateAccountItem}
+            userProfile={userProfile}
+            onUpdateUserProfile={handleUpdateUserProfile}
           />
         )}
 
@@ -1018,6 +1048,8 @@ export default function App() {
         balance={userBalance}
         onUpdateBalance={handleUpdateBalance}
         transactions={walletTransactions}
+        userProfile={userProfile}
+        onUpdateUserProfile={handleUpdateUserProfile}
       />
 
       <BidTradeModal

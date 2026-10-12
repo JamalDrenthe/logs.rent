@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { PortfolioItem, UserRole } from '../../types';
+import { useState, useEffect, useMemo, ChangeEvent, FormEvent } from 'react';
+import { PortfolioItem, UserRole, UserProfile } from '../../types';
 import {
   LayoutDashboard,
   Wallet,
@@ -34,7 +34,11 @@ import {
   Fingerprint,
   RotateCcw,
   Wifi,
-  ExternalLink
+  ExternalLink,
+  CreditCard,
+  Building,
+  UserCheck,
+  FileText
 } from 'lucide-react';
 
 interface PortfolioTabProps {
@@ -51,6 +55,27 @@ interface PortfolioTabProps {
   onOpenDisputeModal?: (accountId: number) => void;
   onRelistItem?: (item: PortfolioItem) => void;
   onUpdateAccount?: (updatedItem: PortfolioItem) => void;
+  userProfile?: UserProfile;
+  onUpdateUserProfile?: (profile: UserProfile) => void;
+}
+
+// Format IBAN with spaces every 4 characters
+function formatIban(value: string): string {
+  const clean = value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  return clean.match(/.{1,4}/g)?.join(' ') || clean;
+}
+
+// Validate IBAN basic structure
+function validateIban(iban: string): { valid: boolean; error?: string } {
+  const clean = iban.replace(/\s+/g, '').toUpperCase();
+  if (!clean) return { valid: false, error: 'IBAN bankrekeningnummer is verplicht.' };
+  if (clean.length < 15 || clean.length > 34) {
+    return { valid: false, error: 'IBAN moet tussen 15 en 34 tekens bevatten (bijv. NL91 ABNA 0417 8923 11).' };
+  }
+  if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/.test(clean)) {
+    return { valid: false, error: 'Ongeldig IBAN formaat (moet beginnen met landcode zoals NL of BE).' };
+  }
+  return { valid: true };
 }
 
 // Deterministic TOTP generator for 30s intervals
@@ -170,10 +195,12 @@ export function PortfolioTab({
   onSwitchToTraderDemo,
   onOpenHandoffModal,
   onOpenDisputeModal,
-  onUpdateAccount
+  onUpdateAccount,
+  userProfile,
+  onUpdateUserProfile
 }: PortfolioTabProps) {
   // Navigation & filtering state
-  const [activeSubTab, setActiveSubTab] = useState<'all' | 'bought' | 'rented' | 'listed'>('all');
+  const [activeSubTab, setActiveSubTab] = useState<'all' | 'bought' | 'rented' | 'listed' | 'profile'>('all');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -183,6 +210,35 @@ export function PortfolioTab({
 
   // Quick credentials mini-modal
   const [quickCredsItem, setQuickCredsItem] = useState<PortfolioItem | null>(null);
+
+  // Profile & IBAN state
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
+  const [profileForm, setProfileForm] = useState<UserProfile>(() => userProfile || {
+    fullName: 'Jamal Drenthe',
+    email: 'info@jamaldrenthe.com',
+    phone: '+31 6 12345678',
+    iban: 'NL91 ABNA 0417 8923 11',
+    bic: 'ABNANL2A',
+    accountHolder: 'J.S. Drenthe',
+    bankName: 'ABN AMRO Bank N.V.',
+    companyName: 'Logs Rent Trading B.V.',
+    kvkNumber: '89123456',
+    addressStreet: 'Keizersgracht 421',
+    addressCity: 'Amsterdam',
+    addressPostalCode: '1016 EK',
+    country: 'Nederland',
+    isVerified: true,
+    lastUpdated: '12 Okt 2026'
+  });
+  const [profileValidationMsg, setProfileValidationMsg] = useState<string | null>(null);
+  const [profileSuccessMsg, setProfileSuccessMsg] = useState<string | null>(null);
+
+  // Sync profileForm when userProfile prop updates
+  useEffect(() => {
+    if (userProfile) {
+      setProfileForm(userProfile);
+    }
+  }, [userProfile]);
 
   // Operations actions state
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
@@ -241,7 +297,7 @@ export function PortfolioTab({
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
               In het Account Dashboard beheer je direct je aangekochte en gehuurde accounts met echte logische
               mogelijkheden: live sessie cookie validatie, realtime TOTP 2FA codes, residentiële proxies,
-              dagelijkse huurinkomsten en één-klik noodbeveiliging.
+              SEPA IBAN uitbetalingen en één-klik noodbeveiliging.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-3 font-mono text-xs">
@@ -291,11 +347,11 @@ export function PortfolioTab({
 
           <div className="bg-[#0F172A] border border-slate-800 p-6 rounded-2xl shadow-xl space-y-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Globe className="w-5 h-5" />
+              <CreditCard className="w-5 h-5" />
             </div>
-            <h4 className="text-white font-bold text-sm">Residentiële Proxies &amp; Noodstop</h4>
+            <h4 className="text-white font-bold text-sm">Geverifieerde SEPA IBAN Uitbetalingen</h4>
             <p className="text-slate-400 font-sans text-xs leading-relaxed">
-              Toegewezen Nederlandse en Europese schone proxies en directe Panic Lock om sessies acuut in te trekken bij verdachte activiteit.
+              Vul je persoonlijke gegevens en IBAN in voor geautomatiseerde, veilige daguitbetalingen van je passieve huurinkomsten.
             </p>
           </div>
         </div>
@@ -483,6 +539,59 @@ export function PortfolioTab({
     onUpdateAccount?.(updated);
   };
 
+  // Handle Profile Form IBAN Change
+  const handleProfileIbanChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatIban(e.target.value);
+    let bankName = profileForm.bankName || '';
+    const clean = formatted.replace(/\s+/g, '');
+    if (clean.length >= 8) {
+      const bankCode = clean.slice(4, 8);
+      if (bankCode === 'ABNA') bankName = 'ABN AMRO Bank N.V.';
+      else if (bankCode === 'INGB') bankName = 'ING Bank N.V.';
+      else if (bankCode === 'RABO') bankName = 'Rabobank Nederland';
+      else if (bankCode === 'ASNB') bankName = 'ASN Bank';
+      else if (bankCode === 'SNSB') bankName = 'SNS Bank';
+      else if (bankCode === 'KNAB') bankName = 'Knab Bank';
+      else if (bankCode === 'BUNQ') bankName = 'Bunq B.V.';
+    }
+    setProfileForm((prev) => ({ ...prev, iban: formatted, bankName }));
+  };
+
+  // Handle Profile Form Submit
+  const handleSaveProfile = (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    setProfileValidationMsg(null);
+    setProfileSuccessMsg(null);
+
+    const ibanCheck = validateIban(profileForm.iban);
+    if (!ibanCheck.valid) {
+      setProfileValidationMsg(ibanCheck.error || 'Voer een geldig IBAN bankrekeningnummer in.');
+      return;
+    }
+    if (!profileForm.fullName.trim()) {
+      setProfileValidationMsg('Volledige naam is verplicht.');
+      return;
+    }
+    if (!profileForm.accountHolder.trim()) {
+      setProfileValidationMsg('Tenaamstelling van de rekening is verplicht.');
+      return;
+    }
+
+    const updated: UserProfile = {
+      ...profileForm,
+      isVerified: true,
+      lastUpdated: 'Zojuist'
+    };
+
+    onUpdateUserProfile?.(updated);
+    setProfileSuccessMsg('Uw accountgegevens en IBAN zijn succesvol geverifieerd en opgeslagen!');
+    handleCopy('IBAN gekoppeld', 'Accountprofiel &');
+    setTimeout(() => {
+      setProfileSuccessMsg(null);
+      setIsProfileModalOpen(false);
+    }, 1400);
+  };
+
   return (
     <div className="space-y-6 font-sans">
       {/* Top Banner Alert Feedback */}
@@ -512,37 +621,91 @@ export function PortfolioTab({
         </div>
       )}
 
+      {/* IBAN Missing Alert Banner if no IBAN set */}
+      {(!userProfile?.iban || userProfile.iban.trim() === '') && (
+        <div className="p-4 bg-gradient-to-r from-amber-500/15 to-amber-950/20 border border-amber-500/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <AlertTriangle className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <strong className="text-white text-sm block">Uitbetalingsgegevens &amp; IBAN Ontbreken</strong>
+              <span className="text-amber-300/90 text-xs">
+                Vul je accountgegevens en IBAN bankrekeningnummer in om passieve huurinkomsten en verkopen automatisch te laten storten.
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsProfileModalOpen(true)}
+            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition shrink-0 shadow-md shadow-amber-500/20 text-xs"
+          >
+            Gegevens &amp; IBAN Nu Invullen
+          </button>
+        </div>
+      )}
+
       {/* Main Dashboard Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[#0F172A] border border-slate-800 p-5 sm:p-6 rounded-2xl shadow-xl">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] mb-2 font-bold">
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>ACCOUNT OPERATIONS &amp; MANAGEMENT HUB</span>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] font-bold">
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>ACCOUNT OPERATIONS &amp; MANAGEMENT HUB</span>
+            </span>
+
+            {/* Quick IBAN Status Pill */}
+            <button
+              onClick={() => setIsProfileModalOpen(true)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border font-mono text-[11px] transition ${
+                userProfile?.iban
+                  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20'
+                  : 'bg-amber-500/10 border-amber-500/40 text-amber-300 hover:bg-amber-500/20 animate-pulse'
+              }`}
+              title="Klik om je accountgegevens en IBAN uitbetalingsrekening te beheren"
+            >
+              <CreditCard className="w-3.5 h-3.5 text-cyan-400" />
+              <span>
+                {userProfile?.iban ? `IBAN: ${userProfile.iban}` : 'IBAN Ontbreekt • Invullen'}
+              </span>
+              <span className="text-[9px] bg-slate-900 px-1 py-0.2 rounded text-slate-400 uppercase font-bold">
+                {userProfile?.isVerified ? 'SEPA OK' : 'Vereist'}
+              </span>
+            </button>
           </div>
+
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             Account Beheer &amp; Sessie Dashboard
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Volledige controle over al je actieve accounts, sessie cookies, live TOTP 2FA, anti-detect proxies en dagelijkse huurrendementen.
+            Volledige controle over al je actieve accounts, sessie cookies, live TOTP 2FA, anti-detect proxies en SEPA IBAN uitbetalingen.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 font-mono text-xs w-full md:w-auto">
           <button
+            onClick={() => setIsProfileModalOpen(true)}
+            className="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition flex items-center justify-center gap-2 font-bold"
+            title="Beheer je persoonlijke gegevens, woonadres en IBAN bankrekening"
+          >
+            <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Mijn Gegevens &amp; IBAN</span>
+          </button>
+
+          <button
             onClick={handleBatchSessionCheck}
             disabled={isBatchChecking}
-            className="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition flex items-center justify-center gap-2 font-bold"
+            className="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2"
             title="Voer een automatische handshake check uit op alle actieve cookies"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isBatchChecking ? 'animate-spin text-cyan-400' : ''}`} />
-            <span>{isBatchChecking ? 'Sessies Verifiëren...' : 'Test Alle Sessies'}</span>
+            <span>{isBatchChecking ? 'Verifiëren...' : 'Test Sessies'}</span>
           </button>
 
           <button
             onClick={onOpenWalletModal}
             className="flex-1 md:flex-none px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center justify-center gap-2"
           >
-            <Wallet className="w-3.5 h-3.5 text-cyan-400" />
+            <Wallet className="w-3.5 h-3.5 text-emerald-400" />
             <span>Handelskassa</span>
           </button>
 
@@ -677,60 +840,327 @@ export function PortfolioTab({
             <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
             <span>Te Huur Aangeboden ({listedItems.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveSubTab('profile')}
+            className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 border ${
+              activeSubTab === 'profile'
+                ? 'bg-cyan-500/20 text-cyan-300 font-bold border-cyan-500/40 shadow-sm'
+                : 'bg-[#080C14] text-slate-400 border-slate-800 hover:text-white'
+            }`}
+          >
+            <UserCheck className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Mijn Gegevens &amp; IBAN</span>
+          </button>
         </div>
 
         {/* Search Bar & View Mode Switcher */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 sm:w-60">
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Zoek account, platform of ID..."
-              className="w-full bg-[#080C14] border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
+        {activeSubTab !== 'profile' && (
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 sm:w-60">
+              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Zoek account, platform of ID..."
+                className="w-full bg-[#080C14] border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
 
-          <div className="inline-flex rounded-xl bg-[#080C14] border border-slate-800 p-0.5">
-            <button
-              onClick={() => setViewMode('cards')}
-              className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 ${
-                viewMode === 'cards'
-                  ? 'bg-slate-800 text-white font-bold border border-slate-700'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="Console Kaartweergave"
-            >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Kaarten</span>
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 ${
-                viewMode === 'table'
-                  ? 'bg-slate-800 text-white font-bold border border-slate-700'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="Geavanceerde Tabelweergave"
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Tabel</span>
-            </button>
+            <div className="inline-flex rounded-xl bg-[#080C14] border border-slate-800 p-0.5">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 ${
+                  viewMode === 'cards'
+                    ? 'bg-slate-800 text-white font-bold border border-slate-700'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Console Kaartweergave"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Kaarten</span>
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 ${
+                  viewMode === 'table'
+                    ? 'bg-slate-800 text-white font-bold border border-slate-700'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Geavanceerde Tabelweergave"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Tabel</span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Main View: Cards Grid or Table */}
-      {filteredItems.length === 0 ? (
+      {/* ACTIVE SUBTAB: PROFILE & IBAN VIEW */}
+      {activeSubTab === 'profile' ? (
+        <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl font-mono text-xs space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div>
+              <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs mb-1">
+                <UserCheck className="w-4 h-4" />
+                <span>HANDELAARS IDENTITEIT &amp; UITBETALINGSREKENING</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-black text-white">
+                Mijn Accountgegevens &amp; SEPA IBAN Bankrekening
+              </h3>
+              <p className="text-slate-400 text-xs mt-0.5">
+                Vul je persoonlijke verificatie- en bankgegevens in voor geautomatiseerde dagelijkse uitbetalingen van huurinkomsten en verkoopopbrengsten.
+              </p>
+            </div>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs">
+              <ShieldCheck className="w-4 h-4" />
+              <span>SEPA Instant Pay Geactiveerd</span>
+            </span>
+          </div>
+
+          {profileValidationMsg && (
+            <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>{profileValidationMsg}</span>
+            </div>
+          )}
+
+          {profileSuccessMsg && (
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{profileSuccessMsg}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSaveProfile} className="space-y-6">
+            {/* Section 1: Personal Details */}
+            <div className="bg-[#080C14] border border-slate-800 p-5 rounded-xl space-y-4">
+              <span className="text-white font-bold text-xs flex items-center gap-2 pb-2 border-b border-slate-800">
+                <User className="w-3.5 h-3.5 text-cyan-400" />
+                <span>1. Persoonlijke Identificatie</span>
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Volledige Naam *</label>
+                  <input
+                    type="text"
+                    value={profileForm.fullName}
+                    onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
+                    placeholder="bijv. Jamal Drenthe"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">E-mailadres *</label>
+                  <input
+                    type="email"
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                    placeholder="info@jamaldrenthe.com"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Telefoonnummer (SMS/2FA) *</label>
+                  <input
+                    type="tel"
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                    placeholder="+31 6 12345678"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2: SEPA IBAN Bank Account */}
+            <div className="bg-[#080C14] border border-cyan-500/30 p-5 rounded-xl space-y-4 shadow-inner">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <span className="text-white font-bold text-xs flex items-center gap-2">
+                  <Building className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>2. SEPA Bank- &amp; Uitbetalingsrekening (IBAN)</span>
+                </span>
+                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-bold">
+                  Verplichte Rekening voor Uitkeringen
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] text-slate-300 font-bold mb-1">
+                    IBAN Bankrekeningnummer *
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.iban}
+                    onChange={handleProfileIbanChange}
+                    placeholder="NL91 ABNA 0417 8923 11"
+                    maxLength={34}
+                    className="w-full bg-slate-950 border border-cyan-500/50 rounded-lg px-3 py-2.5 text-sm text-cyan-300 font-black uppercase tracking-widest focus:outline-none focus:border-emerald-500"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    Nederlands of Europees IBAN nummer (automatisch geformatteerd)
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-300 font-bold mb-1">
+                    Tenaamstelling Rekening (Exact zoals bij bank) *
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.accountHolder}
+                    onChange={(e) => setProfileForm({ ...profileForm, accountHolder: e.target.value })}
+                    placeholder="bijv. J.S. Drenthe"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white font-bold focus:outline-none focus:border-cyan-500"
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    Moet overeenkomen met uw officiële identiteitsbewijs
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Bankinstelling</label>
+                  <input
+                    type="text"
+                    value={profileForm.bankName || ''}
+                    onChange={(e) => setProfileForm({ ...profileForm, bankName: e.target.value })}
+                    placeholder="bijv. ABN AMRO Bank N.V."
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">BIC / SWIFT Code</label>
+                  <input
+                    type="text"
+                    value={profileForm.bic || ''}
+                    onChange={(e) => setProfileForm({ ...profileForm, bic: e.target.value })}
+                    placeholder="bijv. ABNANL2A"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Address Details */}
+            <div className="bg-[#080C14] border border-slate-800 p-5 rounded-xl space-y-4">
+              <span className="text-white font-bold text-xs flex items-center gap-2 pb-2 border-b border-slate-800">
+                <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                <span>3. Woon- &amp; Vestigingsadres</span>
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] text-slate-400 mb-1">Straat en Huisnummer</label>
+                  <input
+                    type="text"
+                    value={profileForm.addressStreet}
+                    onChange={(e) => setProfileForm({ ...profileForm, addressStreet: e.target.value })}
+                    placeholder="Keizersgracht 421"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Postcode</label>
+                  <input
+                    type="text"
+                    value={profileForm.addressPostalCode}
+                    onChange={(e) => setProfileForm({ ...profileForm, addressPostalCode: e.target.value })}
+                    placeholder="1016 EK"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white uppercase focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Woonplaats</label>
+                  <input
+                    type="text"
+                    value={profileForm.addressCity}
+                    onChange={(e) => setProfileForm({ ...profileForm, addressCity: e.target.value })}
+                    placeholder="Amsterdam"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Land</label>
+                  <input
+                    type="text"
+                    value={profileForm.country}
+                    onChange={(e) => setProfileForm({ ...profileForm, country: e.target.value })}
+                    placeholder="Nederland"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 4: Business Details (Optional) */}
+            <div className="bg-[#080C14] border border-slate-800 p-5 rounded-xl space-y-4">
+              <span className="text-white font-bold text-xs flex items-center gap-2 pb-2 border-b border-slate-800">
+                <FileText className="w-3.5 h-3.5 text-slate-400" />
+                <span>4. Zakelijke Gegevens (Optioneel voor B.V. of Eenmanszaak)</span>
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Bedrijfsnaam</label>
+                  <input
+                    type="text"
+                    value={profileForm.companyName || ''}
+                    onChange={(e) => setProfileForm({ ...profileForm, companyName: e.target.value })}
+                    placeholder="bijv. Logs Rent Trading B.V."
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">KvK-nummer</label>
+                  <input
+                    type="text"
+                    value={profileForm.kvkNumber || ''}
+                    onChange={(e) => setProfileForm({ ...profileForm, kvkNumber: e.target.value })}
+                    placeholder="89123456"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3">
+              <span className="text-slate-400 text-[11px]">
+                Laatst bijgewerkt: <strong className="text-slate-200">{profileForm.lastUpdated || 'Onbekend'}</strong>
+              </span>
+
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 text-xs"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Gegevens &amp; IBAN Opslaan</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : filteredItems.length === 0 ? (
+        /* NO ACCOUNTS FOUND */
         <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-12 text-center space-y-3 font-mono">
           <AlertTriangle className="w-8 h-8 text-amber-400 mx-auto" />
           <h4 className="text-white font-bold text-sm">Geen accounts gevonden</h4>
@@ -1051,7 +1481,7 @@ export function PortfolioTab({
                             setShowPassword(false);
                           }}
                           className="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 py-1.5 rounded-lg transition text-[11px]"
-                          title="Snelle 2FA & Inloggegevens"
+                          title="Snelle 2FA &amp; Inloggegevens"
                         >
                           <Key className="w-3.5 h-3.5 text-cyan-400" />
                         </button>
@@ -1090,6 +1520,220 @@ export function PortfolioTab({
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* DEDICATED PROFILE & IBAN MODAL */}
+      {isProfileModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 font-mono text-xs">
+          <div className="bg-[#0F172A] border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold">
+                  <UserCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-white font-black text-base">
+                    Mijn Accountgegevens &amp; IBAN
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Geverifieerde uitbetalingsrekening voor directe SEPA uitbetalingen
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsProfileModalOpen(false)}
+                className="text-slate-400 hover:text-white transition p-1.5 rounded-lg hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 overflow-y-auto space-y-4 flex-1">
+              {profileValidationMsg && (
+                <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>{profileValidationMsg}</span>
+                </div>
+              )}
+
+              {profileSuccessMsg && (
+                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>{profileSuccessMsg}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSaveProfile} className="space-y-4">
+                {/* 1. SEPA IBAN Box */}
+                <div className="bg-[#080C14] border border-cyan-500/40 p-4 rounded-xl space-y-3 shadow-inner">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-800">
+                    <span className="font-bold text-white text-xs flex items-center gap-1.5">
+                      <Building className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>IBAN Uitbetalingsrekening (SEPA)</span>
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      Garantie Instant Pay
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] text-slate-300 font-bold mb-1">
+                      IBAN Bankrekeningnummer *
+                    </label>
+                    <input
+                      type="text"
+                      value={profileForm.iban}
+                      onChange={handleProfileIbanChange}
+                      placeholder="NL91 ABNA 0417 8923 11"
+                      maxLength={34}
+                      className="w-full bg-slate-950 border border-cyan-500/50 rounded-lg px-3 py-2 text-sm text-cyan-300 font-black uppercase tracking-wider focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">
+                        Tenaamstelling Rekening *
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.accountHolder}
+                        onChange={(e) => setProfileForm({ ...profileForm, accountHolder: e.target.value })}
+                        placeholder="bijv. J.S. Drenthe"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">
+                        Bankinstelling
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.bankName || ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, bankName: e.target.value })}
+                        placeholder="bijv. ABN AMRO Bank N.V."
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Personal identification */}
+                <div className="bg-[#080C14] border border-slate-800 p-4 rounded-xl space-y-3">
+                  <span className="font-bold text-white text-xs block pb-1 border-b border-slate-800">
+                    Persoonlijke Gegevens &amp; Contact
+                  </span>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">Volledige Naam *</label>
+                      <input
+                        type="text"
+                        value={profileForm.fullName}
+                        onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
+                        placeholder="Jamal Drenthe"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">E-mailadres *</label>
+                      <input
+                        type="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                        placeholder="info@jamaldrenthe.com"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] text-slate-400 mb-1">Telefoonnummer (SMS/2FA) *</label>
+                      <input
+                        type="tel"
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                        placeholder="+31 6 12345678"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Address */}
+                <div className="bg-[#080C14] border border-slate-800 p-4 rounded-xl space-y-3">
+                  <span className="font-bold text-white text-xs block pb-1 border-b border-slate-800">
+                    Woonadres &amp; Land
+                  </span>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-3">
+                      <label className="block text-[11px] text-slate-400 mb-1">Straat en Huisnummer</label>
+                      <input
+                        type="text"
+                        value={profileForm.addressStreet}
+                        onChange={(e) => setProfileForm({ ...profileForm, addressStreet: e.target.value })}
+                        placeholder="Keizersgracht 421"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">Postcode</label>
+                      <input
+                        type="text"
+                        value={profileForm.addressPostalCode}
+                        onChange={(e) => setProfileForm({ ...profileForm, addressPostalCode: e.target.value })}
+                        placeholder="1016 EK"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white uppercase focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">Woonplaats</label>
+                      <input
+                        type="text"
+                        value={profileForm.addressCity}
+                        onChange={(e) => setProfileForm({ ...profileForm, addressCity: e.target.value })}
+                        placeholder="Amsterdam"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">Land</label>
+                      <input
+                        type="text"
+                        value={profileForm.country}
+                        onChange={(e) => setProfileForm({ ...profileForm, country: e.target.value })}
+                        placeholder="Nederland"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsProfileModalOpen(false)}
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold"
+                  >
+                    Annuleren
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-emerald-500/20"
+                  >
+                    Opslaan &amp; IBAN Bevestigen
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
 

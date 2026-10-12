@@ -1,4 +1,4 @@
-import { AccountListing, OrderBookEntry, RecentTrade, PortfolioItem, DisputeItem, WalletTransaction } from '../types';
+import { AccountListing, OrderBookEntry, RecentTrade, PortfolioItem, DisputeItem, WalletTransaction, UserProfile } from '../types';
 
 export const INITIAL_ACCOUNTS: AccountListing[] = [
   {
@@ -503,3 +503,22 @@ export const INITIAL_WALLET_TRANSACTIONS: WalletTransaction[] = [
   { id: 'WTX-103', type: 'Borg Escrow', amount: 250, method: 'Gereserveerd voor ID #9812', date: '12 Sep 14:20', status: 'Voltooid', isCredit: false },
   { id: 'WTX-104', type: 'Storting', amount: 10000, method: 'USDT TRC20 Crypto', date: '10 Sep 11:00', status: 'Voltooid', isCredit: true }
 ];
+
+export const INITIAL_USER_PROFILE: UserProfile = {
+  fullName: 'Jamal Drenthe',
+  email: 'info@jamaldrenthe.com',
+  phone: '+31 6 12345678',
+  iban: 'NL91 ABNA 0417 8923 11',
+  bic: 'ABNANL2A',
+  accountHolder: 'J.S. Drenthe',
+  bankName: 'ABN AMRO Bank N.V.',
+  companyName: 'Logs Rent Trading B.V.',
+  kvkNumber: '89123456',
+  addressStreet: 'Keizersgracht 421',
+  addressCity: 'Amsterdam',
+  addressPostalCode: '1016 EK',
+  country: 'Nederland',
+  isVerified: true,
+  lastUpdated: '12 Okt 2026'
+};
+
