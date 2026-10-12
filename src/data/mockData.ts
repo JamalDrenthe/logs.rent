@@ -320,13 +320,32 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     escrowLocked: 0,
     renterOrBuyer: 'Mijn Handelskassa (Volledig Eigendom)',
     contractEnds: 'Permanent in Eigendom',
+    sessionHealth: 'actief',
+    lastSessionCheck: 'Vandaag, 12:40',
     credentials: {
       username: 'cs2_prime_collector_55',
       email: 'oge_cs2_primary@privatemail.ch',
       passwordMasked: '••••••••••••••••',
-      sessionCookies: 'steam_sec_token_99af2...381',
-      twoFactorSecret: 'JBSWY3DPEHPK3PXP'
-    }
+      sessionCookies: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.steam_sess_auth_99af2c781',
+      twoFactorSecret: 'JBSWY3DPEHPK3PXP',
+      backupCodes: ['7A82-99B1', '33X1-90PQ', '44KK-81ZA', '99LL-00MM']
+    },
+    proxy: {
+      host: 'ams-res1.proxies.logs.rent',
+      port: 8443,
+      protocol: 'SOCKS5',
+      country: 'Nederland',
+      countryCode: 'NL',
+      ipReputation: 'Schoon (0% fraude risk)',
+      latencyMs: 24
+    },
+    fingerprint: {
+      browser: 'Chrome 124.0.6367.91',
+      os: 'Windows 11 Pro 64-bit',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      screenResolution: '1920x1080'
+    },
+    autoRelist: true
   },
   {
     id: 'P-LEASE-2',
@@ -342,13 +361,32 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     escrowLocked: 350,
     renterOrBuyer: 'Mijn Handelskassa (Huurder)',
     contractEnds: 'Nog 6 dagen',
+    sessionHealth: 'actief',
+    lastSessionCheck: 'Vandaag, 11:15',
     credentials: {
       username: 'discord_dev_pro_4021',
       email: 'botdev4021@logs.rent',
       passwordMasked: '••••••••••••••••',
-      sessionCookies: 'discord_auth_token_9021a...bc1',
-      twoFactorSecret: 'HXDMVJECJJWSRB3H'
-    }
+      sessionCookies: 'MTA5Mjc2OTIzODQ1MDMwMTA4MA.GzX124.discord_auth_token_9021a',
+      twoFactorSecret: 'HXDMVJECJJWSRB3H',
+      backupCodes: ['DC-4891-AA', 'DC-9921-ZZ', 'DC-3301-LL']
+    },
+    proxy: {
+      host: 'fra-res2.proxies.logs.rent',
+      port: 1080,
+      protocol: 'HTTP',
+      country: 'Duitsland',
+      countryCode: 'DE',
+      ipReputation: 'Schoon (0% fraude risk)',
+      latencyMs: 31
+    },
+    fingerprint: {
+      browser: 'Brave 1.65.126',
+      os: 'macOS 14.4 Sonoma',
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      screenResolution: '2560x1440'
+    },
+    autoRelist: false
   },
   {
     id: 'P-RENT-3',
@@ -363,7 +401,33 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     totalEarned: 245,
     escrowLocked: 250,
     renterOrBuyer: 'Investbotiq Agent #04',
-    contractEnds: 'Nog 4 dagen'
+    contractEnds: 'Nog 4 dagen',
+    sessionHealth: 'actief',
+    lastSessionCheck: 'Vandaag, 09:30',
+    credentials: {
+      username: 'tiktok_verified_creator_98',
+      email: 'oge_creator98@gmail.com',
+      passwordMasked: '••••••••••••••••',
+      sessionCookies: 'sessionid_ss=8a7c29e1f008432a9; sid_tt=339fae10984',
+      twoFactorSecret: 'MFRGGZDFMY2TMOBX',
+      backupCodes: ['TT-8841-01', 'TT-4412-99']
+    },
+    proxy: {
+      host: 'ams-res3.proxies.logs.rent',
+      port: 8443,
+      protocol: 'SOCKS5',
+      country: 'Nederland',
+      countryCode: 'NL',
+      ipReputation: 'Schoon (0% fraude risk)',
+      latencyMs: 19
+    },
+    fingerprint: {
+      browser: 'Chrome 124.0 (Mobile emulation)',
+      os: 'Android 14 (Pixel 8)',
+      userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+      screenResolution: '1080x2400'
+    },
+    autoRelist: true
   },
   {
     id: 'P-RENT-4',
@@ -378,7 +442,33 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     totalEarned: 180,
     escrowLocked: 200,
     renterOrBuyer: 'MarketingBot Corp',
-    contractEnds: 'Nog 2 dagen'
+    contractEnds: 'Nog 2 dagen',
+    sessionHealth: 'verloopt_binnenkort',
+    lastSessionCheck: 'Gisteren, 22:45',
+    credentials: {
+      username: 'meta_agency_bm_admin',
+      email: 'agency_admin@marketingcorp.io',
+      passwordMasked: '••••••••••••••••',
+      sessionCookies: 'c_user=10008472910; xs=38:fa29bc103:2:178912',
+      twoFactorSecret: 'JBSWY3DPEHPK3PXP',
+      backupCodes: ['FB-7712-44', 'FB-1102-88']
+    },
+    proxy: {
+      host: 'ldn-res4.proxies.logs.rent',
+      port: 9050,
+      protocol: 'HTTP',
+      country: 'Verenigd Koninkrijk',
+      countryCode: 'GB',
+      ipReputation: 'Schoon (0% fraude risk)',
+      latencyMs: 27
+    },
+    fingerprint: {
+      browser: 'Firefox 125.0 ESR',
+      os: 'Windows 11 64-bit',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+      screenResolution: '1920x1080'
+    },
+    autoRelist: true
   }
 ];
 

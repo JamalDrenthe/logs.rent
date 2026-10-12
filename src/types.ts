@@ -83,7 +83,26 @@ export interface PortfolioItem {
     passwordMasked?: string;
     sessionCookies?: string;
     twoFactorSecret?: string;
+    backupCodes?: string[];
   };
+  sessionHealth?: 'actief' | 'verloopt_binnenkort' | 'verlopen' | 'ingetrokken';
+  lastSessionCheck?: string;
+  proxy?: {
+    host: string;
+    port: number;
+    protocol: 'SOCKS5' | 'HTTP';
+    country: string;
+    countryCode: string;
+    ipReputation: string;
+    latencyMs?: number;
+  };
+  fingerprint?: {
+    browser: string;
+    os: string;
+    userAgent: string;
+    screenResolution: string;
+  };
+  autoRelist?: boolean;
 }
 
 export interface DisputeItem {

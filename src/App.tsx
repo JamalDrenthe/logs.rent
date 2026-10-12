@@ -46,6 +46,7 @@ import {
   Home,
   TrendingUp,
   Store,
+  LayoutDashboard,
   Calculator,
   Bot,
   Wallet,
@@ -310,19 +311,38 @@ export default function App() {
         escrowLocked: 0,
         renterOrBuyer: 'Mijn Handelskassa (Volledig Eigendom)',
         contractEnds: 'Permanent in Eigendom',
+        sessionHealth: 'actief',
+        lastSessionCheck: 'Zojuist',
         credentials: {
           username: `${selectedAccount.platform.toLowerCase()}_trader_${selectedAccount.id}`,
           email: `oge_${selectedAccount.id}@privatemail.com`,
-          passwordMasked: '•••••••••••••••• (Verifieer in Handoff)',
+          passwordMasked: 'SuperSecurePass2026!#',
           sessionCookies: `lr_auth_token_${Date.now()}_sec_sess`,
-          twoFactorSecret: 'JBSWY3DPEHPK3PXP'
-        }
+          twoFactorSecret: 'JBSWY3DPEHPK3PXP',
+          backupCodes: ['RC-9912-AA', 'RC-4412-BB', 'RC-8812-CC']
+        },
+        proxy: {
+          host: 'ams-res1.proxies.logs.rent',
+          port: 8443,
+          protocol: 'SOCKS5',
+          country: 'Nederland',
+          countryCode: 'NL',
+          ipReputation: 'Schoon (0% fraude risk)',
+          latencyMs: 22
+        },
+        fingerprint: {
+          browser: 'Chrome 124.0.6367.91',
+          os: 'Windows 11 Pro 64-bit',
+          userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          screenResolution: '1920x1080'
+        },
+        autoRelist: true
       };
       setPortfolio((prev) => [newPortItem, ...prev]);
       setAccounts((prev) =>
         prev.map((a) => (a.id === selectedAccount.id ? { ...a, status: 'sold' } : a))
       );
-      triggerToast(`Account ID #${selectedAccount.id} gekocht en toegevoegd aan je Portfolio onder Eigendom!`);
+      triggerToast(`Account ID #${selectedAccount.id} gekocht en toegevoegd aan je Dashboard onder Eigendom!`);
       setIsHandoffOpen(true);
     } else if (tradeData.type === 'HUUR') {
       const newPortItem: PortfolioItem = {
@@ -339,13 +359,32 @@ export default function App() {
         escrowLocked: tradeData.escrowBorg,
         renterOrBuyer: 'Mijn Handelskassa (Huurder)',
         contractEnds: `Nog ${tradeData.days || 7} dagen`,
+        sessionHealth: 'actief',
+        lastSessionCheck: 'Zojuist',
         credentials: {
           username: `${selectedAccount.platform.toLowerCase()}_lease_${selectedAccount.id}`,
           email: `lease_${selectedAccount.id}@logs.rent`,
-          passwordMasked: '•••••••••••••••• (Tijdelijke Sessie)',
+          passwordMasked: 'TijdelijkeHuurderPass2026!#',
           sessionCookies: `lr_lease_cookie_${Date.now()}`,
-          twoFactorSecret: 'HXDMVJECJJWSRB3H'
-        }
+          twoFactorSecret: 'HXDMVJECJJWSRB3H',
+          backupCodes: ['RC-3312-XX', 'RC-7712-YY']
+        },
+        proxy: {
+          host: 'ams-res2.proxies.logs.rent',
+          port: 8443,
+          protocol: 'SOCKS5',
+          country: 'Nederland',
+          countryCode: 'NL',
+          ipReputation: 'Schoon (0% fraude risk)',
+          latencyMs: 25
+        },
+        fingerprint: {
+          browser: 'Chrome 124.0.6367.91',
+          os: 'Windows 11 Pro 64-bit',
+          userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          screenResolution: '1920x1080'
+        },
+        autoRelist: false
       };
       setPortfolio((prev) => [newPortItem, ...prev]);
       setAccounts((prev) =>
@@ -356,6 +395,14 @@ export default function App() {
     } else {
       triggerToast(`Bod van € ${tradeData.price},00 voor ${selectedAccount.title} in orderboek geplaatst!`);
     }
+  };
+
+  // Update account item in portfolio
+  const handleUpdateAccountItem = (updatedItem: PortfolioItem) => {
+    setPortfolio((prev) =>
+      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
+    triggerToast(`Account ID #${updatedItem.accountId} instellingen opgeslagen.`);
   };
 
   // Claim yield
@@ -479,7 +526,7 @@ export default function App() {
     { key: 'home', label: 'Home', icon: Home },
     { key: 'logs', label: 'Logs', icon: Store },
     { key: 'rent', label: 'Rent', icon: TrendingUp },
-    { key: 'portfolio', label: language === 'nl' ? 'Portfolio' : 'Portfolio', icon: Wallet },
+    { key: 'portfolio', label: language === 'nl' ? 'Dashboard' : 'Dashboard', icon: LayoutDashboard },
     { key: 'investbotiq', label: 'Investbotiq', icon: Bot },
     { key: 'valuatie', label: language === 'nl' ? 'Valuatie' : 'Valuation', icon: Calculator },
     ...(isAdmin ? [{ key: 'admin', label: 'Admin', icon: ShieldAlert }] : []),
@@ -853,6 +900,7 @@ export default function App() {
               setCurrentUser('trader_pro@logs.rent');
               triggerToast('Demo Handelaar sessie geactiveerd.');
             }}
+            onUpdateAccount={handleUpdateAccountItem}
           />
         )}
 
