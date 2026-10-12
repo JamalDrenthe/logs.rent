@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   INITIAL_ACCOUNTS,
   INITIAL_ORDERBOOK_ASKS,
@@ -29,16 +29,18 @@ import { auth } from './lib/firebase';
 import { HomeTab } from './components/tabs/HomeTab';
 import { BeursTab } from './components/tabs/BeursTab';
 import { CatalogusTab } from './components/tabs/CatalogusTab';
-import { AdminTab } from './components/tabs/AdminTab';
-import { ValuatieTab } from './components/tabs/ValuatieTab';
-import { InvestbotiqTab } from './components/tabs/InvestbotiqTab';
 import { PortfolioTab } from './components/tabs/PortfolioTab';
-import { DispuutTab } from './components/tabs/DispuutTab';
-import { ApiPortalTab } from './components/tabs/ApiPortalTab';
-import { AnonymityGuideTab } from './components/tabs/AnonymityGuideTab';
-import { OverOnsTab } from './components/tabs/OverOnsTab';
-import { ContactTab } from './components/tabs/ContactTab';
-import { FaqTab } from './components/tabs/FaqTab';
+
+// Lazy-loaded secondary views for code-splitting
+const AdminTab = lazy(() => import('./components/tabs/AdminTab').then((m) => ({ default: m.AdminTab })));
+const ValuatieTab = lazy(() => import('./components/tabs/ValuatieTab').then((m) => ({ default: m.ValuatieTab })));
+const InvestbotiqTab = lazy(() => import('./components/tabs/InvestbotiqTab').then((m) => ({ default: m.InvestbotiqTab })));
+const DispuutTab = lazy(() => import('./components/tabs/DispuutTab').then((m) => ({ default: m.DispuutTab })));
+const ApiPortalTab = lazy(() => import('./components/tabs/ApiPortalTab').then((m) => ({ default: m.ApiPortalTab })));
+const AnonymityGuideTab = lazy(() => import('./components/tabs/AnonymityGuideTab').then((m) => ({ default: m.AnonymityGuideTab })));
+const OverOnsTab = lazy(() => import('./components/tabs/OverOnsTab').then((m) => ({ default: m.OverOnsTab })));
+const ContactTab = lazy(() => import('./components/tabs/ContactTab').then((m) => ({ default: m.ContactTab })));
+const FaqTab = lazy(() => import('./components/tabs/FaqTab').then((m) => ({ default: m.FaqTab })));
 
 import {
   Home,
@@ -64,6 +66,16 @@ import {
   Languages
 } from 'lucide-react';
 
+function loadFromStorage<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function App() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     if (typeof window === 'undefined') return 'dark';
@@ -74,20 +86,38 @@ export default function App() {
     return (window.localStorage.getItem('logs-rent-language') as 'nl' | 'en' | null) ?? 'nl';
   });
 
-  // State management
+  // State management with localStorage persistence
   const [activeTab, setActiveTab] = useState<string>('home');
-  const [accounts, setAccounts] = useState<AccountListing[]>(INITIAL_ACCOUNTS);
-  const [selectedAccount, setSelectedAccount] = useState<AccountListing>(INITIAL_ACCOUNTS[0]);
+  const [accounts, setAccounts] = useState<AccountListing[]>(() =>
+    loadFromStorage('logs-rent-accounts', INITIAL_ACCOUNTS)
+  );
+  const [selectedAccount, setSelectedAccount] = useState<AccountListing>(
+    () => accounts[0] || INITIAL_ACCOUNTS[0]
+  );
   const [orderBookAsks, setOrderBookAsks] = useState<OrderBookEntry[]>(INITIAL_ORDERBOOK_ASKS);
   const [orderBookBids, setOrderBookBids] = useState<OrderBookEntry[]>(INITIAL_ORDERBOOK_BIDS);
-  const [recentTrades, setRecentTrades] = useState<RecentTrade[]>(INITIAL_TRADES);
-  const [portfolio, setPortfolio] = useState<PortfolioItem[]>(INITIAL_PORTFOLIO);
-  const [disputes, setDisputes] = useState<DisputeItem[]>(INITIAL_DISPUTES);
-  const [walletTransactions, setWalletTransactions] = useState<WalletTransaction[]>(INITIAL_WALLET_TRANSACTIONS);
+  const [recentTrades, setRecentTrades] = useState<RecentTrade[]>(() =>
+    loadFromStorage('logs-rent-trades', INITIAL_TRADES)
+  );
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>(() =>
+    loadFromStorage('logs-rent-portfolio', INITIAL_PORTFOLIO)
+  );
+  const [disputes, setDisputes] = useState<DisputeItem[]>(() =>
+    loadFromStorage('logs-rent-disputes', INITIAL_DISPUTES)
+  );
+  const [walletTransactions, setWalletTransactions] = useState<WalletTransaction[]>(() =>
+    loadFromStorage('logs-rent-txs', INITIAL_WALLET_TRANSACTIONS)
+  );
 
-  const [userBalance, setUserBalance] = useState<number>(14250.0);
-  const [unclaimedYield, setUnclaimedYield] = useState<number>(285.0);
+  const [userBalance, setUserBalance] = useState<number>(() =>
+    loadFromStorage('logs-rent-balance', 14250.0)
+  );
+  const [unclaimedYield, setUnclaimedYield] = useState<number>(() =>
+    loadFromStorage('logs-rent-yield', 285.0)
+  );
   const [currentUser, setCurrentUser] = useState<string | null>(() => auth.currentUser?.email ?? null);
+  const [disputePrefillId, setDisputePrefillId] = useState<number | null>(null);
+  const [disputeAutoOpen, setDisputeAutoOpen] = useState<boolean>(false);
 
   const userRole: UserRole =
     !currentUser
@@ -122,6 +152,29 @@ export default function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Sync to localStorage
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-accounts', JSON.stringify(accounts));
+  }, [accounts]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-portfolio', JSON.stringify(portfolio));
+  }, [portfolio]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-balance', JSON.stringify(userBalance));
+  }, [userBalance]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-yield', JSON.stringify(unclaimedYield));
+  }, [unclaimedYield]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-txs', JSON.stringify(walletTransactions));
+  }, [walletTransactions]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-disputes', JSON.stringify(disputes));
+  }, [disputes]);
+  useEffect(() => {
+    window.localStorage.setItem('logs-rent-trades', JSON.stringify(recentTrades));
+  }, [recentTrades]);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -207,6 +260,15 @@ export default function App() {
         ? tradeData.price * (tradeData.days || 7) + tradeData.escrowBorg
         : tradeData.price;
 
+    // Strict balance check: reject trade if balance is insufficient
+    if (userBalance < totalCost) {
+      triggerToast(
+        `Onvoldoende saldo (€ ${userBalance.toLocaleString('nl-NL')}). Totaal vereist: € ${totalCost.toLocaleString('nl-NL')}. Waardeer uw handelskassa op.`
+      );
+      setIsWalletOpen(true);
+      return;
+    }
+
     setUserBalance((prev) => Math.max(0, prev - totalCost));
 
     const newTx: WalletTransaction = {
@@ -258,7 +320,7 @@ export default function App() {
       };
       setPortfolio((prev) => [newPortItem, ...prev]);
       setAccounts((prev) =>
-        prev.map((a) => (a.id === selectedAccount.id ? { ...a, status: 'rented' } : a))
+        prev.map((a) => (a.id === selectedAccount.id ? { ...a, status: 'sold' } : a))
       );
       triggerToast(`Account ID #${selectedAccount.id} gekocht en toegevoegd aan je Portfolio onder Eigendom!`);
       setIsHandoffOpen(true);
@@ -344,15 +406,39 @@ export default function App() {
   };
 
   // Moderate listing handler (Admin)
-  const handleModerateListing = (accountId: number, newStatus: 'available' | 'rented') => {
+  const handleModerateListing = (
+    accountId: number,
+    newStatus: 'available' | 'rented' | 'paused' | 'sold'
+  ) => {
     setAccounts((prev) =>
       prev.map((a) => (a.id === accountId ? { ...a, status: newStatus } : a))
     );
     triggerToast(
       newStatus === 'available'
         ? `Listing ID #${accountId} is heractiveerd door Admin.`
-        : `Listing ID #${accountId} is offline/gepauzeerd gezet door Admin.`
+        : `Listing ID #${accountId} status is gewijzigd naar '${newStatus}' door Admin.`
     );
+  };
+
+  // Reset all data to factory demo defaults
+  const handleResetData = () => {
+    if (window.confirm('Weet u zeker dat u alle marktdata, portfolio en transacties wilt resetten naar de standaard beginwaarden?')) {
+      window.localStorage.removeItem('logs-rent-accounts');
+      window.localStorage.removeItem('logs-rent-portfolio');
+      window.localStorage.removeItem('logs-rent-balance');
+      window.localStorage.removeItem('logs-rent-yield');
+      window.localStorage.removeItem('logs-rent-txs');
+      window.localStorage.removeItem('logs-rent-disputes');
+      window.localStorage.removeItem('logs-rent-trades');
+      setAccounts(INITIAL_ACCOUNTS);
+      setPortfolio(INITIAL_PORTFOLIO);
+      setUserBalance(14250.0);
+      setUnclaimedYield(285.0);
+      setWalletTransactions(INITIAL_WALLET_TRANSACTIONS);
+      setDisputes(INITIAL_DISPUTES);
+      setRecentTrades(INITIAL_TRADES);
+      triggerToast('Demo data gereset naar fabrieksinstellingen.');
+    }
   };
 
   // Resolve dispute
@@ -680,6 +766,14 @@ export default function App() {
 
       {/* Main Content View Switcher */}
       <main className="flex-grow max-w-7xl w-full min-w-0 mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center justify-center min-h-[350px] gap-3 font-mono text-xs text-slate-400">
+              <div className="w-8 h-8 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+              <span>Gegevens laden...</span>
+            </div>
+          }
+        >
         {activeTab === 'home' && (
           <HomeTab
             accounts={accounts}
@@ -750,7 +844,11 @@ export default function App() {
             userRole={userRole}
             onOpenAuthModal={() => setIsAuthOpen(true)}
             onOpenHandoffModal={() => setIsHandoffOpen(true)}
-            onOpenDisputeModal={(_accId) => setActiveTab('dispuut')}
+            onOpenDisputeModal={(accId) => {
+              setDisputePrefillId(accId);
+              setDisputeAutoOpen(true);
+              setActiveTab('dispuut');
+            }}
             onSwitchToTraderDemo={() => {
               setCurrentUser('trader_pro@logs.rent');
               triggerToast('Demo Handelaar sessie geactiveerd.');
@@ -774,6 +872,8 @@ export default function App() {
             disputes={disputes}
             onResolveDispute={handleResolveDispute}
             onAddDispute={handleAddDispute}
+            initialAccountId={disputePrefillId}
+            autoOpenModal={disputeAutoOpen}
           />
         )}
 
@@ -786,6 +886,7 @@ export default function App() {
         {activeTab === 'faq' && <FaqTab />}
 
         {activeTab === 'contact' && <ContactTab />}
+        </Suspense>
       </main>
 
       {/* Footer */}
@@ -849,6 +950,14 @@ export default function App() {
               className="hover:text-emerald-400 transition cursor-pointer"
             >
               Contact
+            </button>
+            <span>•</span>
+            <button
+              onClick={handleResetData}
+              className="text-slate-500 hover:text-amber-400 transition cursor-pointer"
+              title="Herstel alle markt- en portfolio beginwaarden"
+            >
+              Reset Demo
             </button>
           </div>
         </div>

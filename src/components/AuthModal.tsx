@@ -68,9 +68,15 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail === 'info@jamaldrenthe.com') {
+      setError('Het Administrator account is beveiligd. Log uitsluitend in via de officiële Google OAuth verificatie.');
+      return;
+    }
+
     setSuccess(true);
     setTimeout(() => {
-      onLoginSuccess(email || 'handelaar@logs.rent');
+      onLoginSuccess(cleanEmail || 'handelaar@logs.rent');
       setSuccess(false);
       onClose();
     }, 800);
@@ -123,7 +129,7 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
                   <div className="text-white font-bold truncate text-xs">{currentUser}</div>
                   <div className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
                     <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                    <span>{isAdmin ? 'Volledige Beheerrechten' : 'Geverifieerde Handelaar'}</span>
+                    <span>{isAdmin ? 'Volledige Beheerrechten (info@jamaldrenthe.com)' : 'Geverifieerde Handelaar'}</span>
                   </div>
                 </div>
               </div>
@@ -220,7 +226,10 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
                     type="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setError(null);
+                    }}
                     className="w-full bg-[#080C14] border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
@@ -250,8 +259,8 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
               <button
                 type="button"
                 onClick={() => {
-                  setEmail('trader_pro@logs.rent');
-                  onLoginSuccess('trader_pro@logs.rent');
+                  setEmail('demo_trader@logs.rent');
+                  onLoginSuccess('demo_trader@logs.rent');
                   onClose();
                 }}
                 className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-xl border border-slate-700 transition text-[11px]"
@@ -259,17 +268,9 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
                 Direct Demo Inloggen als Handelaar
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('info@jamaldrenthe.com');
-                  onLoginSuccess('info@jamaldrenthe.com');
-                  onClose();
-                }}
-                className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 py-2 rounded-xl border border-emerald-500/30 transition text-[11px] font-bold"
-              >
-                Inloggen als Platform Admin (info@jamaldrenthe.com)
-              </button>
+              <div className="p-2.5 rounded-xl bg-[#080C14] border border-slate-800/80 text-[10px] text-slate-400 text-center font-mono">
+                🛡️ Platform Beheer (Admin) vereist authenticatie via het geautoriseerde Google domein (info@jamaldrenthe.com).
+              </div>
             </form>
           </>
         )}

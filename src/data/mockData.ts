@@ -43,9 +43,9 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
   },
   {
     id: 4021,
-    title: 'Uber Driver Profile 4.98 Rating',
+    title: 'Discord Early Supporter + Bot Dev (18K)',
     category: 'flex',
-    platform: 'Uber',
+    platform: 'Discord',
     grade: 'A',
     price: 2100,
     rentPerDay: 60,
@@ -72,14 +72,14 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
       '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
       'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
     },
-    followersOrRating: '4.98 Sterren (2.840 ritten)',
+    followersOrRating: '18.400 leden & Verified Bot',
     ageYears: '4.2 jaar',
-    verificationLevel: 'Gold Status Diamond Tier',
+    verificationLevel: 'Active Developer + Early Badge',
     banRiskPercent: 0,
     escrowBorg: 350,
-    icon: 'uber',
-    description: 'Direct inzetbaar voor Randstad ritten, vlekkeloze staat van dienst en direct goedgekeurd voertuigprofiel.',
-    status: 'rented'
+    icon: 'discord',
+    description: 'Inclusief verified bot token, custom invite URL en volledige eigendomsrechten met OGE transfer.',
+    status: 'available'
   },
   {
     id: 1192,
@@ -299,7 +299,7 @@ export const INITIAL_ORDERBOOK_BIDS: OrderBookEntry[] = [
 
 export const INITIAL_TRADES: RecentTrade[] = [
   { id: 'T-9812-1', accountId: 9812, accountTitle: 'TikTok Verified 85K', type: 'HUUR', price: 35, rentDays: 7, time: '12:44:10', isBot: true },
-  { id: 'T-4021-2', accountId: 4021, accountTitle: 'Uber Driver Profile 4.98', type: 'KOOP', price: 2100, time: '12:42:05', isBot: false },
+  { id: 'T-4021-2', accountId: 4021, accountTitle: 'Discord Early Supporter', type: 'KOOP', price: 2100, time: '12:42:05', isBot: false },
   { id: 'T-8843-3', accountId: 8843, accountTitle: 'X/Twitter Aged 2016', type: 'BOD', price: 1850, time: '12:38:19', isBot: true },
   { id: 'T-1192-4', accountId: 1192, accountTitle: 'PSN Account 140+ AAA', type: 'HUUR', price: 18, rentDays: 3, time: '12:35:42', isBot: false },
   { id: 'T-3302-5', accountId: 3302, accountTitle: 'Facebook Ads Agency', type: 'KOOP', price: 1200, time: '12:29:11', isBot: true }
@@ -331,8 +331,8 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
   {
     id: 'P-LEASE-2',
     accountId: 4021,
-    accountTitle: 'Uber Driver Profile 4.98 [ID #4021]',
-    platform: 'Uber',
+    accountTitle: 'Discord Early Supporter [ID #4021]',
+    platform: 'Discord',
     grade: 'A',
     currentValue: 2100,
     dailyRent: 60,
@@ -343,10 +343,10 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     renterOrBuyer: 'Mijn Handelskassa (Huurder)',
     contractEnds: 'Nog 6 dagen',
     credentials: {
-      username: 'uber_driver_pro_4021',
-      email: 'driver4021@logs.rent',
+      username: 'discord_dev_pro_4021',
+      email: 'botdev4021@logs.rent',
       passwordMasked: '••••••••••••••••',
-      sessionCookies: 'uber_auth_sess_9021a...bc1',
+      sessionCookies: 'discord_auth_token_9021a...bc1',
       twoFactorSecret: 'HXDMVJECJJWSRB3H'
     }
   },

@@ -42,7 +42,7 @@ export interface AccountListing {
   escrowBorg: number;
   icon: string;
   description: string;
-  status: 'available' | 'rented';
+  status: 'available' | 'rented' | 'sold' | 'paused';
 }
 
 export interface OrderBookEntry {

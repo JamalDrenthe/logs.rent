@@ -96,6 +96,9 @@ export function HandoffWizardModal({
             <p className="text-xs text-slate-400 font-mono">
               Beveiligde overdracht voor {accountTitle}
             </p>
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-mono">
+              <span>Simulatie &amp; Sandbox Omgeving</span>
+            </div>
           </div>
         </div>
 

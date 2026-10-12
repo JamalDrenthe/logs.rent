@@ -485,6 +485,13 @@ export function PortfolioTab({
               </div>
             )}
 
+            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl text-[11px] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
+              <span>
+                <strong>Simulatie Gegevens:</strong> Deze tokens, wachtwoorden en 2FA zaadjes zijn gegenereerd voor veilige demonstratiedoeleinden in de sandbox beurs.
+              </span>
+            </div>
+
             <div className="space-y-3 bg-[#080C14] border border-slate-800 p-4 rounded-xl">
               <div>
                 <span className="text-[10px] text-slate-500 uppercase block mb-1">Gebruikersnaam / Login ID</span>

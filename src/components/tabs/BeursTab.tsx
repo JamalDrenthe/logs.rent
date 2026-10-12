@@ -29,7 +29,7 @@ interface BeursTabProps {
   onOpenTradeModal: (mode: 'buy' | 'rent' | 'bid', price?: number) => void;
   onOpenHandoffModal: () => void;
   userRole?: UserRole;
-  onModerateListing?: (accountId: number, newStatus: 'available' | 'rented') => void;
+  onModerateListing?: (accountId: number, newStatus: 'available' | 'rented' | 'paused' | 'sold') => void;
   onNavigateToDisputes?: () => void;
 }
 
@@ -197,10 +197,20 @@ export function BeursTab({
                     className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                       selectedAccount.status === 'available'
                         ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        : selectedAccount.status === 'rented'
+                        ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+                        : selectedAccount.status === 'sold'
+                        ? 'bg-rose-500/20 text-rose-400 border-rose-500/30'
                         : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                     }`}
                   >
-                    {selectedAccount.status === 'available' ? 'ACTIEF IN CATALOGUS' : 'GEPAUZEERD / INACTIEF'}
+                    {selectedAccount.status === 'available'
+                      ? 'ACTIEF IN CATALOGUS'
+                      : selectedAccount.status === 'rented'
+                      ? 'IN HUUR'
+                      : selectedAccount.status === 'sold'
+                      ? 'VERKOCHT'
+                      : 'GEPAUZEERD / OFFLINE'}
                   </span>
                 </div>
               </div>
@@ -210,16 +220,16 @@ export function BeursTab({
                   onClick={() =>
                     onModerateListing?.(
                       selectedAccount.id,
-                      selectedAccount.status === 'available' ? 'rented' : 'available'
+                      selectedAccount.status === 'paused' ? 'available' : 'paused'
                     )
                   }
                   className={`py-2.5 px-3 rounded-xl font-bold text-xs border transition flex items-center justify-center gap-2 ${
-                    selectedAccount.status === 'available'
-                      ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border-amber-500/30'
-                      : 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border-emerald-500/30'
+                    selectedAccount.status === 'paused'
+                      ? 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border-emerald-500/30'
+                      : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border-amber-500/30'
                   }`}
                 >
-                  {selectedAccount.status === 'available' ? 'Pauzeer Listing (Offline)' : 'Heractiveer Listing'}
+                  {selectedAccount.status === 'paused' ? '▶️ Heractiveer Listing' : '⏸️ Pauzeer Listing (Offline)'}
                 </button>
 
                 <button
@@ -242,24 +252,63 @@ export function BeursTab({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 pt-4 border-t border-slate-800 font-mono">
               <button
+                disabled={selectedAccount.status !== 'available'}
                 onClick={() => onOpenTradeModal('buy', selectedAccount.price)}
-                className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/15"
-                title="Koop direct in permanent eigendom (direct in Portfolio met inloggegevens)"
+                className={`font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg ${
+                  selectedAccount.status === 'available'
+                    ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-cyan-500/15 cursor-pointer'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                }`}
+                title={
+                  selectedAccount.status === 'sold'
+                    ? 'Reeds verkocht'
+                    : selectedAccount.status === 'rented'
+                    ? 'Momenteel verhuurd'
+                    : selectedAccount.status === 'paused'
+                    ? 'Tijdelijk offline'
+                    : 'Koop direct in permanent eigendom'
+                }
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span>Koop Direct (€ {selectedAccount.price.toLocaleString('nl-NL')})</span>
+                <span>
+                  {selectedAccount.status === 'sold'
+                    ? 'Reeds Verkocht'
+                    : `Koop Direct (€ ${selectedAccount.price.toLocaleString('nl-NL')})`}
+                </span>
               </button>
               <button
+                disabled={selectedAccount.status !== 'available'}
                 onClick={() => onOpenTradeModal('rent', selectedAccount.rentPerDay)}
-                className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/15"
-                title="Huren per dag met escrow borgsom"
+                className={`font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg ${
+                  selectedAccount.status === 'available'
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-emerald-500/15 cursor-pointer'
+                    : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                }`}
+                title={
+                  selectedAccount.status === 'sold'
+                    ? 'Reeds verkocht'
+                    : selectedAccount.status === 'rented'
+                    ? 'Reeds verhuurd'
+                    : selectedAccount.status === 'paused'
+                    ? 'Tijdelijk offline'
+                    : 'Huren per dag met escrow borgsom'
+                }
               >
                 <Key className="w-4 h-4" />
-                <span>Huren (€ {selectedAccount.rentPerDay}/dag)</span>
+                <span>
+                  {selectedAccount.status === 'rented'
+                    ? 'Reeds in Huur'
+                    : `Huren (€ ${selectedAccount.rentPerDay}/dag)`}
+                </span>
               </button>
               <button
+                disabled={selectedAccount.status === 'sold' || selectedAccount.status === 'paused'}
                 onClick={() => onOpenTradeModal('bid', Math.round(selectedAccount.price * 0.95))}
-                className="bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl text-xs border border-slate-700 transition flex items-center justify-center gap-2"
+                className={`font-bold py-3 px-4 rounded-xl text-xs border transition flex items-center justify-center gap-2 ${
+                  selectedAccount.status === 'sold' || selectedAccount.status === 'paused'
+                    ? 'bg-slate-800 text-slate-500 border-slate-700/50 cursor-not-allowed opacity-60'
+                    : 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700 cursor-pointer'
+                }`}
                 title="Plaats een bod in het realtime orderboek"
               >
                 <Gavel className="w-4 h-4 text-amber-400" />

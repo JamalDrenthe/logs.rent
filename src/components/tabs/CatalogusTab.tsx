@@ -7,7 +7,7 @@ interface CatalogusTabProps {
   onSelectAccount: (account: AccountListing) => void;
   onOpenTradeModal: (account: AccountListing, mode: 'buy' | 'rent') => void;
   userRole?: UserRole;
-  onModerateListing?: (accountId: number, newStatus: 'available' | 'rented') => void;
+  onModerateListing?: (accountId: number, newStatus: 'available' | 'rented' | 'paused' | 'sold') => void;
 }
 
 export function CatalogusTab({
@@ -20,6 +20,7 @@ export function CatalogusTab({
   const [search, setSearch] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedGrade, setSelectedGrade] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'rented' | 'sold' | 'paused'>('all');
   const [onlyClean, setOnlyClean] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'rent_desc'>('price_desc');
@@ -29,11 +30,12 @@ export function CatalogusTab({
       const matchCat = selectedCategory === 'all' || acc.category === selectedCategory;
       const matchGrade = selectedGrade === 'all' || acc.grade === selectedGrade;
       const matchClean = !onlyClean || acc.banRiskPercent === 0;
+      const matchStatus = statusFilter === 'all' || acc.status === statusFilter;
       const matchQuery =
         acc.title.toLowerCase().includes(search.toLowerCase()) ||
         acc.platform.toLowerCase().includes(search.toLowerCase()) ||
         acc.id.toString().includes(search);
-      return matchCat && matchGrade && matchClean && matchQuery;
+      return matchCat && matchGrade && matchClean && matchStatus && matchQuery;
     })
     .sort((a, b) => {
       if (sortBy === 'price_desc') return b.price - a.price;
@@ -161,6 +163,21 @@ export function CatalogusTab({
           </div>
 
           <div className="flex items-center gap-1 bg-[#080C14] px-2.5 py-1.5 rounded-xl border border-slate-800">
+            <span className="text-slate-400">Status:</span>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as any)}
+              className="bg-transparent text-white focus:outline-none cursor-pointer"
+            >
+              <option value="all" className="bg-slate-900">Alle Statussen</option>
+              <option value="available" className="bg-slate-900">Beschikbaar</option>
+              <option value="rented" className="bg-slate-900">In Huur</option>
+              <option value="sold" className="bg-slate-900">Verkocht</option>
+              <option value="paused" className="bg-slate-900">Gepauzeerd</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1 bg-[#080C14] px-2.5 py-1.5 rounded-xl border border-slate-800">
             <span className="text-slate-400">Sorteer:</span>
             <select
               value={sortBy}
@@ -205,6 +222,7 @@ export function CatalogusTab({
                 <tr className="border-b border-slate-800 bg-[#080C14] text-[10px] text-slate-400 uppercase">
                   <th className="p-3.5">ID &amp; Platform</th>
                   <th className="p-3.5">Titel / Beschrijving</th>
+                  <th className="p-3.5">Status</th>
                   <th className="p-3.5">Grade</th>
                   <th className="p-3.5">Volgers / Rating</th>
                   <th className="p-3.5">Ban Risico</th>
@@ -223,6 +241,27 @@ export function CatalogusTab({
                     <td className="p-3.5 max-w-xs">
                       <span className="font-bold text-white block truncate">{acc.title}</span>
                       <span className="text-[10px] text-slate-400 line-clamp-1 font-sans">{acc.description}</span>
+                    </td>
+                    <td className="p-3.5 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold border font-mono ${
+                          acc.status === 'available'
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                            : acc.status === 'rented'
+                            ? 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'
+                            : acc.status === 'sold'
+                            ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                            : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                        }`}
+                      >
+                        {acc.status === 'available'
+                          ? '● Beschikbaar'
+                          : acc.status === 'rented'
+                          ? '⏳ In Huur'
+                          : acc.status === 'sold'
+                          ? '✕ Verkocht'
+                          : '⏸ Offline'}
+                      </span>
                     </td>
                     <td className="p-3.5 whitespace-nowrap">
                       <span
@@ -263,17 +302,17 @@ export function CatalogusTab({
                             onClick={() =>
                               onModerateListing?.(
                                 acc.id,
-                                acc.status === 'available' ? 'rented' : 'available'
+                                acc.status === 'paused' ? 'available' : 'paused'
                               )
                             }
                             className={`font-bold text-[11px] px-2.5 py-1.5 rounded-lg border transition ${
-                              acc.status === 'available'
-                                ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                              acc.status === 'paused'
+                                ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                                : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30'
                             }`}
                             title="Admin actie: Wijzig publicatiestatus"
                           >
-                            {acc.status === 'available' ? 'Pauzeer' : 'Heractiveer'}
+                            {acc.status === 'paused' ? 'Heractiveer' : 'Pauzeer'}
                           </button>
                         </div>
                       ) : (
@@ -286,18 +325,44 @@ export function CatalogusTab({
                             Beurs
                           </button>
                           <button
+                            disabled={acc.status !== 'available'}
                             onClick={() => onOpenTradeModal(acc, 'buy')}
-                            className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-sm"
-                            title="Koop direct in eigendom (inloggegevens direct beschikbaar)"
+                            className={`font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-sm ${
+                              acc.status === 'available'
+                                ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 cursor-pointer'
+                                : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                            }`}
+                            title={
+                              acc.status === 'sold'
+                                ? 'Dit account is reeds verkocht'
+                                : acc.status === 'rented'
+                                ? 'In actieve huur'
+                                : acc.status === 'paused'
+                                ? 'Tijdelijk offline'
+                                : 'Koop direct in eigendom (inloggegevens direct beschikbaar)'
+                            }
                           >
-                            Koop Direct
+                            {acc.status === 'sold' ? 'Verkocht' : 'Koop Direct'}
                           </button>
                           <button
+                            disabled={acc.status !== 'available'}
                             onClick={() => onOpenTradeModal(acc, 'rent')}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-sm"
-                            title="Huur met dagtarief en borgbescherming"
+                            className={`font-bold text-[11px] px-2.5 py-1.5 rounded-lg transition shadow-sm ${
+                              acc.status === 'available'
+                                ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 cursor-pointer'
+                                : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                            }`}
+                            title={
+                              acc.status === 'sold'
+                                ? 'Reeds verkocht'
+                                : acc.status === 'rented'
+                                ? 'Reeds verhuurd'
+                                : acc.status === 'paused'
+                                ? 'Tijdelijk offline'
+                                : 'Huur met dagtarief en borgbescherming'
+                            }
                           >
-                            Huur
+                            {acc.status === 'rented' ? 'In Huur' : 'Huur'}
                           </button>
                         </div>
                       )}
@@ -323,6 +388,25 @@ export function CatalogusTab({
                     <span className="text-cyan-400 font-bold">ID #{acc.id}</span>
                   </span>
                   <div className="flex items-center gap-2">
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded border font-mono ${
+                        acc.status === 'available'
+                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                          : acc.status === 'rented'
+                          ? 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'
+                          : acc.status === 'sold'
+                          ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                          : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                      }`}
+                    >
+                      {acc.status === 'available'
+                        ? '● Beschikbaar'
+                        : acc.status === 'rented'
+                        ? '⏳ In Huur'
+                        : acc.status === 'sold'
+                        ? '✕ Verkocht'
+                        : '⏸ Offline'}
+                    </span>
                     <span
                       className={`text-xs font-bold px-2 py-0.5 rounded border ${
                         acc.grade === 'A'
@@ -401,17 +485,17 @@ export function CatalogusTab({
                         onClick={() =>
                           onModerateListing?.(
                             acc.id,
-                            acc.status === 'available' ? 'rented' : 'available'
+                            acc.status === 'paused' ? 'available' : 'paused'
                           )
                         }
                         className={`font-bold text-xs px-3 py-2 rounded-xl border transition ${
-                          acc.status === 'available'
-                            ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30'
-                            : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                          acc.status === 'paused'
+                            ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                            : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30'
                         }`}
                         title="Admin: Wijzig status"
                       >
-                        {acc.status === 'available' ? 'Pauzeer' : 'Heractiveer'}
+                        {acc.status === 'paused' ? 'Heractiveer' : 'Pauzeer'}
                       </button>
                     </>
                   ) : (
@@ -424,18 +508,44 @@ export function CatalogusTab({
                         Beurs
                       </button>
                       <button
+                        disabled={acc.status !== 'available'}
                         onClick={() => onOpenTradeModal(acc, 'buy')}
-                        className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl transition shadow-sm"
-                        title="Direct Kopen & Eigendom Overnemen"
+                        className={`font-bold text-xs px-3 py-2 rounded-xl transition shadow-sm ${
+                          acc.status === 'available'
+                            ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 cursor-pointer'
+                            : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                        }`}
+                        title={
+                          acc.status === 'sold'
+                            ? 'Reeds verkocht'
+                            : acc.status === 'rented'
+                            ? 'In actieve huur'
+                            : acc.status === 'paused'
+                            ? 'Tijdelijk offline'
+                            : 'Direct Kopen & Eigendom Overnemen'
+                        }
                       >
-                        Koop Nu
+                        {acc.status === 'sold' ? 'Verkocht' : 'Koop Nu'}
                       </button>
                       <button
+                        disabled={acc.status !== 'available'}
                         onClick={() => onOpenTradeModal(acc, 'rent')}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl transition shadow-md shadow-emerald-500/15"
-                        title="Huren met Dagtarief"
+                        className={`font-bold text-xs px-3 py-2 rounded-xl transition shadow-md shadow-emerald-500/15 ${
+                          acc.status === 'available'
+                            ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 cursor-pointer'
+                            : 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed opacity-60'
+                        }`}
+                        title={
+                          acc.status === 'sold'
+                            ? 'Reeds verkocht'
+                            : acc.status === 'rented'
+                            ? 'Reeds verhuurd'
+                            : acc.status === 'paused'
+                            ? 'Tijdelijk offline'
+                            : 'Huren met Dagtarief'
+                        }
                       >
-                        Huur
+                        {acc.status === 'rented' ? 'In Huur' : 'Huur'}
                       </button>
                     </>
                   )}

@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { DisputeItem } from '../../types';
 import { ShieldAlert, CheckCircle2, AlertTriangle, FileText, PlusCircle, ArrowDownLeft, X } from 'lucide-react';
 
@@ -6,14 +6,31 @@ interface DispuutTabProps {
   disputes: DisputeItem[];
   onResolveDispute: (id: string) => void;
   onAddDispute: (newDispute: DisputeItem) => void;
+  initialAccountId?: number | null;
+  autoOpenModal?: boolean;
 }
 
-export function DispuutTab({ disputes, onResolveDispute, onAddDispute }: DispuutTabProps) {
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [accountIdInput, setAccountIdInput] = useState<string>('9812');
+export function DispuutTab({
+  disputes,
+  onResolveDispute,
+  onAddDispute,
+  initialAccountId,
+  autoOpenModal
+}: DispuutTabProps) {
+  const [showModal, setShowModal] = useState<boolean>(() => Boolean(autoOpenModal));
+  const [accountIdInput, setAccountIdInput] = useState<string>(() => (initialAccountId ? String(initialAccountId) : '9812'));
   const [reasonInput, setReasonInput] = useState<string>('Account geband tijdens actieve huurperiode');
   const [detailsInput, setDetailsInput] = useState<string>('');
   const [successNotice, setSuccessNotice] = useState<string>('');
+
+  useEffect(() => {
+    if (initialAccountId) {
+      setAccountIdInput(String(initialAccountId));
+    }
+    if (autoOpenModal) {
+      setShowModal(true);
+    }
+  }, [initialAccountId, autoOpenModal]);
 
   const handleSubmitDispute = (e: FormEvent) => {
     e.preventDefault();
