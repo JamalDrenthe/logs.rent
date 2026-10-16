@@ -22,14 +22,14 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
 
   if (!isOpen) return null;
 
-  const isAdmin = currentUser === 'info@jamaldrenthe.com';
+  const isAdmin = currentUser === 'info@logs.rent' || currentUser === 'info@jamaldrenthe.com';
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError(null);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const userEmail = result.user.email || 'info@jamaldrenthe.com';
+      const userEmail = result.user.email || 'info@logs.rent';
       setSuccess(true);
       setTimeout(() => {
         onLoginSuccess(userEmail);
@@ -69,7 +69,7 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const cleanEmail = email.trim().toLowerCase();
-    if (cleanEmail === 'info@jamaldrenthe.com') {
+    if (cleanEmail === 'info@logs.rent' || cleanEmail === 'info@jamaldrenthe.com') {
       setError('Het Administrator account is beveiligd. Log uitsluitend in via de officiële Google OAuth verificatie.');
       return;
     }
@@ -129,7 +129,7 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
                   <div className="text-white font-bold truncate text-xs">{currentUser}</div>
                   <div className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
                     <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                    <span>{isAdmin ? 'Volledige Beheerrechten (info@jamaldrenthe.com)' : 'Geverifieerde Handelaar'}</span>
+                    <span>{isAdmin ? 'Volledige Beheerrechten (info@logs.rent)' : 'Geverifieerde Handelaar'}</span>
                   </div>
                 </div>
               </div>
@@ -269,7 +269,7 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
               </button>
 
               <div className="p-2.5 rounded-xl bg-[#080C14] border border-slate-800/80 text-[10px] text-slate-400 text-center font-mono">
-                🛡️ Platform Beheer (Admin) vereist authenticatie via het geautoriseerde Google domein (info@jamaldrenthe.com).
+                🛡️ Platform Beheer (Admin) vereist authenticatie via het geautoriseerde Google domein (info@logs.rent).
               </div>
             </form>
           </>

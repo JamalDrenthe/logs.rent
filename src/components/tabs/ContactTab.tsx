@@ -137,6 +137,11 @@ export function ContactTab() {
 
             <div className="space-y-3">
               <div className="p-3 bg-[#080C14] rounded-xl border border-slate-850">
+                <span className="text-slate-500 block text-[10px]">PLATFORM DIRECTIE &amp; MANAGEMENT</span>
+                <span className="text-emerald-400 font-bold text-xs">info@logs.rent</span>
+              </div>
+
+              <div className="p-3 bg-[#080C14] rounded-xl border border-slate-850">
                 <span className="text-slate-500 block text-[10px]">ALGEMENE ONDERSTEUNING</span>
                 <span className="text-white font-bold text-xs">desk@logs.rent</span>
               </div>

@@ -126,7 +126,7 @@ export default function App() {
   const userRole: UserRole =
     !currentUser
       ? 'visitor'
-      : currentUser === 'info@jamaldrenthe.com'
+      : (currentUser === 'info@logs.rent' || currentUser === 'info@jamaldrenthe.com')
       ? 'admin'
       : 'trader';
 
@@ -630,15 +630,15 @@ export default function App() {
             </button>
             <button
               onClick={() => {
-                setCurrentUser('info@jamaldrenthe.com');
-                triggerToast('Weergave: Platform Admin (info@jamaldrenthe.com)');
+                setCurrentUser('info@logs.rent');
+                triggerToast('Weergave: Platform Admin (info@logs.rent)');
               }}
               className={`px-2 py-0.5 rounded-md transition flex items-center gap-1 ${
                 userRole === 'admin'
                   ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 shadow-sm'
                   : 'text-slate-400 hover:text-white'
               }`}
-              title="Bekijk hoe platform admin Jamal Drenthe logs.rent ervaart"
+              title="Bekijk hoe platform admin logs.rent ervaart"
             >
               <ShieldAlert className="w-3 h-3 text-emerald-400" />
               <span>Admin</span>
@@ -1082,7 +1082,7 @@ export default function App() {
         onClose={() => setIsAuthOpen(false)}
         onLoginSuccess={(email) => {
           setCurrentUser(email);
-          triggerToast(`Ingelogd als ${email}${email === 'info@jamaldrenthe.com' ? ' (Admin)' : ''}`);
+          triggerToast(`Ingelogd als ${email}${(email === 'info@logs.rent' || email === 'info@jamaldrenthe.com') ? ' (Admin)' : ''}`);
         }}
         onLogout={() => {
           setCurrentUser(null);

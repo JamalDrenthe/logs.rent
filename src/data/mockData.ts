@@ -506,7 +506,7 @@ export const INITIAL_WALLET_TRANSACTIONS: WalletTransaction[] = [
 
 export const INITIAL_USER_PROFILE: UserProfile = {
   fullName: 'Jamal Drenthe',
-  email: 'info@jamaldrenthe.com',
+  email: 'info@logs.rent',
   phone: '+31 6 12345678',
   iban: 'NL91 ABNA 0417 8923 11',
   bic: 'ABNANL2A',

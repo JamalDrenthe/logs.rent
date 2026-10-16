@@ -132,7 +132,7 @@ export function HomeTab({
                 </span>
               </div>
               <p className="text-slate-400 text-[11px] mt-0.5">
-                Ingelogd als {currentUser || 'info@jamaldrenthe.com'} • Volledige beheer-, moderatie- en escrow arbitragerechten
+                Ingelogd als {currentUser || 'info@logs.rent'} • Volledige beheer-, moderatie- en escrow arbitragerechten
               </p>
             </div>
           </div>

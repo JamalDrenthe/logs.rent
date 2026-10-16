@@ -215,7 +215,7 @@ export function PortfolioTab({
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const [profileForm, setProfileForm] = useState<UserProfile>(() => userProfile || {
     fullName: 'Jamal Drenthe',
-    email: 'info@jamaldrenthe.com',
+    email: 'info@logs.rent',
     phone: '+31 6 12345678',
     iban: 'NL91 ABNA 0417 8923 11',
     bic: 'ABNANL2A',
@@ -969,7 +969,7 @@ export function PortfolioTab({
                     type="email"
                     value={profileForm.email}
                     onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                    placeholder="info@jamaldrenthe.com"
+                    placeholder="info@logs.rent"
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                   />
                 </div>
@@ -1645,7 +1645,7 @@ export function PortfolioTab({
                         type="email"
                         value={profileForm.email}
                         onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                        placeholder="info@jamaldrenthe.com"
+                        placeholder="info@logs.rent"
                         className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
                       />
                     </div>

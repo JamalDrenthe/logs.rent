@@ -61,7 +61,7 @@ export function AdminTab({
               {isNl ? 'ADMINISTRATOR CONTROLE CENTRUM' : 'ADMIN CONTROL CENTER'}
             </span>
             <span className="text-slate-600">•</span>
-            <span className="text-slate-400 text-xs">info@jamaldrenthe.com</span>
+            <span className="text-slate-400 text-xs">info@logs.rent</span>
           </div>
           <h2 className="text-2xl font-extrabold text-white font-mono">
             Platform &amp; Escrow Beheerpaneel
@@ -350,7 +350,7 @@ export function AdminTab({
             <div className="p-4 rounded-xl bg-[#080C14] border border-slate-800 flex items-center justify-between">
               <div>
                 <span className="text-slate-400 block text-[11px]">Admin Beveiligingsregels (firestore.rules)</span>
-                <span className="text-slate-200 text-xs">Exclusieve lees- en schrijfrechten voor info@jamaldrenthe.com</span>
+                <span className="text-slate-200 text-xs">Exclusieve lees- en schrijfrechten voor info@logs.rent</span>
               </div>
               <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[11px]">
                 ACTIEF
