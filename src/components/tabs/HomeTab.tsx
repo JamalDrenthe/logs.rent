@@ -171,8 +171,8 @@ export function HomeTab({
               onClick={() => onNavigate('portfolio')}
               className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center gap-1.5"
             >
-              <Wallet className="w-3.5 h-3.5" />
-              <span>Mijn Portfolio</span>
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Account Centrum</span>
             </button>
             <button
               onClick={onOpenListingModal}

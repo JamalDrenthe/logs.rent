@@ -514,11 +514,15 @@ export const INITIAL_USER_PROFILE: UserProfile = {
   bankName: 'ABN AMRO Bank N.V.',
   companyName: 'Logs Rent Trading B.V.',
   kvkNumber: '89123456',
+  vatNumber: 'NL891234567B01',
   addressStreet: 'Keizersgracht 421',
   addressCity: 'Amsterdam',
   addressPostalCode: '1016 EK',
   country: 'Nederland',
   isVerified: true,
-  lastUpdated: '12 Okt 2026'
+  verificationLevel: 2,
+  lastUpdated: '12 Okt 2026',
+  autoSweepEnabled: true,
+  autoSweepThreshold: 500
 };
 

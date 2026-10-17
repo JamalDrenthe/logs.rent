@@ -137,11 +137,25 @@ export interface UserProfile {
   bankName?: string;
   companyName?: string;
   kvkNumber?: string;
+  vatNumber?: string;
   addressStreet: string;
   addressCity: string;
   addressPostalCode: string;
   country: string;
   isVerified: boolean;
+  verificationLevel?: 1 | 2 | 3;
   lastUpdated?: string;
+  autoSweepEnabled?: boolean;
+  autoSweepThreshold?: number;
 }
+
+export type AccountCenterSection =
+  | 'overview'
+  | 'accounts'
+  | 'finance'
+  | 'profile'
+  | 'security'
+  | 'api'
+  | 'settings';
+
 

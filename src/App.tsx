@@ -17,7 +17,8 @@ import {
   DisputeItem,
   WalletTransaction,
   UserRole,
-  UserProfile
+  UserProfile,
+  AccountCenterSection
 } from './types';
 import { Logo } from './components/Logo';
 import { WalletModal } from './components/WalletModal';
@@ -122,6 +123,7 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<string | null>(() => auth.currentUser?.email ?? null);
   const [disputePrefillId, setDisputePrefillId] = useState<number | null>(null);
   const [disputeAutoOpen, setDisputeAutoOpen] = useState<boolean>(false);
+  const [accountCenterSection, setAccountCenterSection] = useState<AccountCenterSection>('overview');
 
   const userRole: UserRole =
     !currentUser
@@ -543,7 +545,7 @@ export default function App() {
     { key: 'home', label: 'Home', icon: Home },
     { key: 'logs', label: 'Logs', icon: Store },
     { key: 'rent', label: 'Rent', icon: TrendingUp },
-    { key: 'portfolio', label: language === 'nl' ? 'Dashboard' : 'Dashboard', icon: LayoutDashboard },
+    { key: 'portfolio', label: language === 'nl' ? 'Account Centrum' : 'Account Center', icon: LayoutDashboard },
     { key: 'investbotiq', label: 'Investbotiq', icon: Bot },
     { key: 'valuatie', label: language === 'nl' ? 'Valuatie' : 'Valuation', icon: Calculator },
     ...(isAdmin ? [{ key: 'admin', label: 'Admin', icon: ShieldAlert }] : []),
@@ -647,7 +649,10 @@ export default function App() {
 
           {userRole !== 'visitor' && userProfile.iban && (
             <span
-              onClick={() => setActiveTab('portfolio')}
+              onClick={() => {
+                setAccountCenterSection('finance');
+                setActiveTab('portfolio');
+              }}
               className="cursor-pointer inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono font-bold hover:bg-emerald-500/20 transition"
               title={`SEPA IBAN Gekoppeld: ${userProfile.iban} (t.n.v. ${userProfile.accountHolder || userProfile.fullName})`}
             >
@@ -763,7 +768,14 @@ export default function App() {
 
             {/* User Login/Auth trigger */}
             <button
-              onClick={() => setIsAuthOpen(true)}
+              onClick={() => {
+                if (userRole !== 'visitor') {
+                  setAccountCenterSection('overview');
+                  setActiveTab('portfolio');
+                } else {
+                  setIsAuthOpen(true);
+                }
+              }}
               className={`text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-mono border ${
                 userRole === 'admin'
                   ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-bold'
@@ -771,6 +783,7 @@ export default function App() {
                   ? 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold'
                   : 'bg-[#0F172A] hover:bg-slate-800 text-slate-200 border-slate-700'
               }`}
+              title={userRole !== 'visitor' ? 'Open Account Centrum' : 'Inloggen'}
             >
               {userRole === 'admin' ? (
                 <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" />
@@ -931,6 +944,10 @@ export default function App() {
             onUpdateAccount={handleUpdateAccountItem}
             userProfile={userProfile}
             onUpdateUserProfile={handleUpdateUserProfile}
+            userBalance={userBalance}
+            walletTransactions={walletTransactions}
+            onUpdateBalance={handleUpdateBalance}
+            initialSection={accountCenterSection}
           />
         )}
 
