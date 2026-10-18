@@ -566,7 +566,7 @@ export default function App() {
       : ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'];
 
   return (
-    <div className={`${theme === 'light' ? 'theme-light' : ''} min-w-0 overflow-x-hidden bg-[#080C14] text-slate-200 min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300`}>
+    <div className={`${theme === 'light' ? 'theme-light bg-slate-50 text-slate-900' : 'bg-[#080C14] text-slate-200'} min-w-0 overflow-x-hidden min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300`}>
       {/* Top Ticker Bar with dynamic price action & Role Preview Switcher */}
       <div className="bg-slate-950 border-b border-slate-800 py-1.5 text-xs font-mono text-slate-400 select-none flex items-center justify-between px-3 sm:px-6">
         <div className="overflow-hidden whitespace-nowrap min-w-0 flex-1 mr-4">
