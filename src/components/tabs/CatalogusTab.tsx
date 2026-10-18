@@ -145,7 +145,7 @@ export function CatalogusTab({
             }`}
           >
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>0% Ban Risk</span>
+            <span>Clean Historie</span>
           </button>
 
           <div className="flex items-center gap-1 bg-[#080C14] px-2.5 py-1.5 rounded-xl border border-slate-800">

@@ -130,7 +130,7 @@ export function HandoffWizardModal({
                 <span className="text-white font-bold">ID #{accountId}</span>
               </div>
               <div className="flex items-center justify-between text-slate-300">
-                <span>Escrow Smart Contract Status:</span>
+                <span>Escrow Borg Status:</span>
                 <span className="text-emerald-400 font-bold flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Gevalideerd & Geblokkeerd
@@ -142,7 +142,7 @@ export function HandoffWizardModal({
               </div>
               <div className="flex items-center justify-between text-slate-300">
                 <span>Audit Risico Ban Score:</span>
-                <span className="text-emerald-400 font-bold">0.0% (Clean Audit)</span>
+                <span className="text-emerald-400 font-bold">Minimaal (&lt; 1%)</span>
               </div>
             </div>
 

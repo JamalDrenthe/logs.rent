@@ -34,7 +34,7 @@ export function ContactTab() {
           Neem contact op met het Logs Rent team
         </h1>
         <p className="text-slate-300 text-xs sm:text-sm mt-2 max-w-2xl leading-relaxed">
-          Heeft u vragen over een specifieke notering, escrow borgstellingen, Investbotiq API sleutels of zakelijke partnerschappen? Ons team reageert doorgaans binnen zestig minuten.
+          Heeft u vragen over een specifieke notering, escrow borgstellingen, API-koppelingen of zakelijke partnerschappen? Ons team reageert doorgaans binnen zestig minuten.
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export function ContactTab() {
               </div>
               <h3 className="text-base font-bold text-white">Bericht succesvol verzonden</h3>
               <p className="text-xs text-slate-300">
-                Bedankt voor uw bericht. Een medewerker van de Logs Rent arbitrage desk neemt spoedig contact met u op via het opgegeven e mailadres.
+                Bedankt voor uw bericht. Een medewerker van de Logs Rent desk neemt spoedig contact met u op via het opgegeven e mailadres.
               </p>
             </div>
           ) : (
@@ -93,8 +93,8 @@ export function ContactTab() {
                 >
                   <option value="escrow">Escrow en Borgtocht Vragen</option>
                   <option value="listing">Account Notering en Valuatie</option>
-                  <option value="investbotiq">Investbotiq API en WebSockets</option>
-                  <option value="dispuut">Dispuut en Arbitrage Spoed</option>
+                  <option value="api">API Koppelingen en Webhooks</option>
+                  <option value="dispuut">Dispuut en Geschillenbehandeling</option>
                   <option value="overig">Algemene Zakelijke Vraag</option>
                 </select>
               </div>
@@ -147,12 +147,12 @@ export function ContactTab() {
               </div>
 
               <div className="p-3 bg-[#080C14] rounded-xl border border-slate-850">
-                <span className="text-slate-500 block text-[10px]">ESCROW ARBITRAGE DESK</span>
+                <span className="text-slate-500 block text-[10px]">DISPUUT &amp; ESCROW DESK</span>
                 <span className="text-emerald-400 font-bold text-xs">escrow@logs.rent</span>
               </div>
 
               <div className="p-3 bg-[#080C14] rounded-xl border border-slate-850">
-                <span className="text-slate-500 block text-[10px]">API EN INVESTBOTIQ PARTNERS</span>
+                <span className="text-slate-500 block text-[10px]">API &amp; AUTOMATISERING</span>
                 <span className="text-amber-400 font-bold text-xs">api@logs.rent</span>
               </div>
             </div>
@@ -170,7 +170,7 @@ export function ContactTab() {
                 <span className="text-emerald-400 font-bold">24 uur per dag</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800">
-                <span className="text-slate-400">Escrow Arbitrage:</span>
+                <span className="text-slate-400">Dispuutdesk:</span>
                 <span>08:00 tot 23:00 CET</span>
               </div>
               <div className="flex justify-between py-1">

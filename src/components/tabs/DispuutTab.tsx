@@ -48,7 +48,7 @@ export function DispuutTab({
 
     onAddDispute(newDispute);
     setShowModal(false);
-    setSuccessNotice('Dispuut succesvol ingediend. Escrow arbitrage analyseert de serverlogs.');
+    setSuccessNotice('Dispuut succesvol ingediend. De escrow desk analyseert de sessie- en inloglogs.');
     setTimeout(() => setSuccessNotice(''), 3000);
   };
 
@@ -60,7 +60,7 @@ export function DispuutTab({
           <div className="flex items-center gap-2 mb-1.5 font-mono">
             <ShieldAlert className="w-5 h-5 text-cyan-400" />
             <h2 className="text-xl font-bold text-white font-mono">
-              Dispuut & Escrow Arbitrage Centrum
+              Dispuut- &amp; Escrow Centrum
             </h2>
           </div>
           <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
@@ -196,7 +196,7 @@ export function DispuutTab({
                   className="w-full bg-[#080C14] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"
                 >
                   <option value="Account geband tijdens actieve huurperiode">
-                    Account geband tijdens actieve huurperiode (0% Ban Risk Breach)
+                    Account geband tijdens actieve huurperiode (Onaangekondigde blokkade)
                   </option>
                   <option value="Inloggegevens of wachtwoord gewijzigd door eigenaar">
                     Inloggegevens of wachtwoord gewijzigd door verhuurder
@@ -222,7 +222,7 @@ export function DispuutTab({
               </div>
 
               <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 text-xs">
-                Bij een terechte melding keert het Escrow smart contract automatisch de € 250
+                Bij een terechte melding keert de escrow kassa automatisch de € 250
                 borgsom terug naar uw handelskassa.
               </div>
 
@@ -230,7 +230,7 @@ export function DispuutTab({
                 type="submit"
                 className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-rose-500/20 text-xs"
               >
-                Dien Dispuut In ter Arbitrage
+                Dien Dispuut In ter Beoordeling
               </button>
             </form>
           </div>

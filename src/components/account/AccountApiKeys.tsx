@@ -15,7 +15,7 @@ import {
 export function AccountApiKeys() {
   const [liveKey, setLiveKey] = useState<string>('lr_live_9948102948194a8f90123b782c');
   const [testKey, setTestKey] = useState<string>('lr_test_dev88194881029471c09931a');
-  const [webhookUrl, setWebhookUrl] = useState<string>('https://bot.investbotiq.ai/hook');
+  const [webhookUrl, setWebhookUrl] = useState<string>('https://api.jouwdomein.nl/webhooks/logs-rent');
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
   const [pingSuccess, setPingSuccess] = useState<string | null>(null);
   const [isPinging, setIsPinging] = useState<boolean>(false);
@@ -53,15 +53,15 @@ export function AccountApiKeys() {
       {/* Top Banner */}
       <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-amber-400 font-bold text-xs mb-1">
-            <Bot className="w-4 h-4 text-amber-400" />
-            <span>INVESTBOTIQ &amp; DEVELOPER API HUB</span>
+          <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs mb-1">
+            <Code className="w-4 h-4 text-cyan-400" />
+            <span>DEVELOPER API &amp; WEBHOOK HUB</span>
           </div>
           <h3 className="text-xl font-black text-white">
-            API Sleutels, Webhooks &amp; Handelsbot Koppelingen
+            API-sleutels, Webhooks &amp; Automatisering
           </h3>
           <p className="text-slate-400 text-xs mt-0.5">
-            Automatiseer accountverhuur, orderboek-arbitrage en TOTP 2FA synchronisatie via onze high-speed REST &amp; WebSocket endpoints.
+            Automatiseer accountverhuur, orderbeheer en TOTP 2FA-synchronisatie via onze REST- &amp; WebSocket-endpoints.
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export function AccountApiKeys() {
           </div>
 
           <p className="text-slate-400 text-xs leading-relaxed">
-            Gebruik deze sleutel voor geautomatiseerde huurcontracten, escrow smart contract bids en TOTP cookie handshakes namens jouw account.
+            Gebruik deze sleutel voor geautomatiseerde huurcontracten, orderstatus-updates en beveiligde sessie-overdrachten namens jouw account.
           </p>
 
           <div className="space-y-2">

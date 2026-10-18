@@ -171,9 +171,9 @@ export function BeursTab({
                 <Lock className="w-3.5 h-3.5" />
                 <span>Test 2FA Handoff</span>
               </button>
-              <div className="hidden sm:flex items-center gap-1.5 bg-[#080C14] px-3 py-1.5 rounded-xl border border-slate-800 text-amber-400 text-xs font-mono">
-                <Bot className="w-3.5 h-3.5" />
-                <span>Investbotiq Ready</span>
+              <div className="hidden sm:flex items-center gap-1.5 bg-[#080C14] px-3 py-1.5 rounded-xl border border-slate-800 text-emerald-400 text-xs font-mono">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Escrow Gedekt</span>
               </div>
             </div>
           </div>
@@ -432,7 +432,7 @@ export function BeursTab({
               <span>Logs Rent A/B/C Status Gradering & Risico Evaluatie</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Geautomatiseerde verificatiescore voor maximale transparantie, 0% ban risico en
+              Geautomatiseerde verificatiescore voor maximale transparantie, minimaal ban-risico en
               escrow borgstelling.
             </p>
           </div>
@@ -515,7 +515,7 @@ export function BeursTab({
               </li>
               <li className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-                <span>Geschikt voor snelle arbitrage / tests</span>
+                <span>Geschikt voor kortlopende projecten en tests</span>
               </li>
             </ul>
           </div>

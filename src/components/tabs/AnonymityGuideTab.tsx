@@ -8,16 +8,15 @@ export function AnonymityGuideTab() {
         <div className="flex items-center gap-2 mb-2 font-mono">
           <EyeOff className="w-5 h-5 text-emerald-400" />
           <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-            Veiligheid & ToS Protectie Protocol
+            Veiligheid &amp; Anonimiteit
           </span>
         </div>
         <h2 className="text-xl font-bold text-white mb-2 font-mono">
-          Veiligheid & Geanonimiseerde ID Notatie Gids
+          Anonimiteit &amp; Accountbescherming
         </h2>
         <p className="text-slate-300 text-xs leading-relaxed max-w-3xl font-sans">
-          Hoe de geanonimiseerde ID codering (zoals ID #9812) accounts 100% beschermt tegen
-          voortijdige opsporing, ban risico's en schorsingen door externe platformen zoals TikTok,
-          Uber, Meta en PlayStation.
+          Waarom accounts worden aangeboden onder een anonieme ID (zoals ID #9812), hoe sessie-overdracht
+          werkt via cookies en residentiële proxies, en hoe de escrow-borgsom kopers en verhuurders beschermt.
         </p>
       </div>
 
@@ -106,7 +105,7 @@ export function AnonymityGuideTab() {
               <tr>
                 <td className="py-3 font-bold text-white">Overdrachtsmethode</td>
                 <td className="text-rose-400">Handmatige overdracht via chat zonder borg</td>
-                <td className="text-emerald-400 font-bold">Geautomatiseerde Escrow Smart Contract Handoff</td>
+                <td className="text-emerald-400 font-bold">Geautomatiseerde Escrow Handoff</td>
               </tr>
               <tr>
                 <td className="py-3 font-bold text-white">2FA Authenticatie</td>

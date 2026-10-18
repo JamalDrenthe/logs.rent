@@ -28,7 +28,7 @@ export function ApiPortalTab() {
               market_price: 1450.0,
               daily_rent: 35.0,
               escrow_status: 'ESCROW_LOCKED_SECURE',
-              ban_risk_score: 0.0,
+              ban_risk_score: 0.01,
               auto_totp_supported: true
             }
           },
@@ -91,12 +91,12 @@ executeOrder();`;
             </span>
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <Code className="w-5 h-5 text-cyan-400" />
-              <span>Investbotiq Developer API Portal</span>
+              <span>Logs Rent Developer API Portal</span>
             </h2>
           </div>
           <p className="text-slate-300 font-sans leading-relaxed text-xs">
-            Volledige specificatie en interactieve sandbox voor algo trading agents, geautomatiseerd
-            orderbeheer, live websocket streams en webhook event hooks.
+            Volledige specificatie en interactieve sandbox voor integraties, geautomatiseerd
+            orderbeheer, live WebSocket-streams en webhook-events.
           </p>
         </div>
 
@@ -114,7 +114,7 @@ executeOrder();`;
         <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
           <h3 className="font-bold text-white text-sm border-b border-slate-800 pb-2 flex items-center gap-2">
             <Globe className="w-4 h-4 text-cyan-400" />
-            <span>Beurs API Endpoints</span>
+            <span>Marktplaats API Endpoints</span>
           </h3>
 
           <div className="space-y-2">
@@ -126,7 +126,7 @@ executeOrder();`;
                 <code className="text-slate-200">/v2/market/accounts</code>
               </div>
               <p className="text-[11px] text-slate-400 font-sans">
-                Haal realtime orderboeken, koersen en A/B/C graderingen op.
+                Haal realtime aanbod, accountgegevens en A/B/C graderingen op.
               </p>
             </div>
 

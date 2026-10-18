@@ -300,7 +300,7 @@ export function AccountPortfolio({
                   <button
                     onClick={() => onOpenConsole(item)}
                     className="flex-1 py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-center transition flex items-center justify-center gap-1.5"
-                    title="Open geavanceerde Operations Console voor cookies, proxy en noodcentrum"
+                    title="Open sessietools voor cookies, proxy en noodcentrum"
                   >
                     <Sliders className="w-3.5 h-3.5 text-cyan-400" />
                     <span>Console</span>

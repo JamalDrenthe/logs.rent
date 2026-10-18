@@ -400,7 +400,7 @@ export const INITIAL_PORTFOLIO: PortfolioItem[] = [
     type: 'NOTERING',
     totalEarned: 245,
     escrowLocked: 250,
-    renterOrBuyer: 'Investbotiq Agent #04',
+    renterOrBuyer: 'MediaFlow Agency B.V.',
     contractEnds: 'Nog 4 dagen',
     sessionHealth: 'actief',
     lastSessionCheck: 'Vandaag, 09:30',

@@ -21,7 +21,7 @@ export function FaqTab() {
       id: 'faq1',
       category: 'escrow',
       question: 'Hoe beschermt de Logs Rent escrow borgsom mijn aankoop of huurperiode?',
-      answer: 'Bij elke transactie reserveert ons platform automatisch een escrow borgsom. Deze borg blijft veilig vergrendeld in een smart contract totdat de huurperiode zonder incidenten is afgerond of de koper de volledige overdracht heeft goedgekeurd. Mocht het account tussentijds geblokkeerd raken, dan keert de escrow desk de volledige borg direct terug naar uw handelskassa.'
+      answer: 'Bij elke transactie reserveert ons platform automatisch een escrow borgsom. Deze borg blijft veilig vergrendeld op een geblokkeerde tussenrekening totdat de huurperiode zonder incidenten is afgerond of de koper de volledige overdracht heeft goedgekeurd. Mocht het account tussentijds geblokkeerd raken, dan keert de escrow desk de volledige borg direct terug naar uw handelskassa.'
     },
     {
       id: 'faq2',
@@ -44,8 +44,8 @@ export function FaqTab() {
     {
       id: 'faq5',
       category: 'api',
-      question: 'Hoe kan ik geautomatiseerde trading bots koppelen via Investbotiq?',
-      answer: 'Binnen de Investbotiq en API tabbladen genereert u met een klik een unieke bearer API sleutel. Vervolgens kunt u via onze WebSocket stream orderboeken uitlezen, geautomatiseerde limietorders plaatsen en geautomatiseerde TOTP handoffs uitvoeren met minder dan twintig milliseconden latentie.'
+      question: 'Hoe kan ik de API en Webhooks koppelen voor automatisering?',
+      answer: 'In het API & Automatisering tabblad genereert u met één klik een unieke API-sleutel. Vervolgens kunt u via onze REST- en WebSocket-endpoints realtime voorraad uitlezen, orders plaatsen en geautomatiseerde handoffs uitvoeren.'
     },
     {
       id: 'faq6',
@@ -63,7 +63,7 @@ export function FaqTab() {
       id: 'faq8',
       category: 'huren',
       question: 'Wat is het verschil tussen Klasse A, Klasse B en Klasse C noteringen?',
-      answer: 'Klasse A accounts zijn ouder dan twee jaar, beschikken over originele e mail toegang en hebben een ban risico van nul procent. Klasse B accounts hebben gedeeltelijke verificatie en een minimale historie. Klasse C noteringen zijn budgetvriendelijke instapaccounts met kortere historie.'
+      answer: 'Klasse A accounts zijn ouder dan twee jaar, beschikken over originele e mail toegang en hebben een minimaal ban-risico (< 1%). Klasse B accounts hebben gedeeltelijke verificatie en een minimale historie. Klasse C noteringen zijn budgetvriendelijke instapaccounts met kortere historie.'
     }
   ];
 
@@ -84,7 +84,7 @@ export function FaqTab() {
     { key: 'escrow', label: 'Escrow en Borgsom' },
     { key: 'veiligheid', label: 'Anonimiteit en Veiligheid' },
     { key: 'huren', label: 'Huren en Rendement' },
-    { key: 'api', label: 'Investbotiq en API' },
+    { key: 'api', label: 'API en Automatisering' },
     { key: 'wallet', label: 'Handelskassa en Saldo' }
   ];
 
@@ -101,7 +101,7 @@ export function FaqTab() {
           Veelgestelde Vragen over de Logs Rent Beurs
         </h1>
         <p className="text-slate-300 text-xs sm:text-sm mt-2 max-w-2xl leading-relaxed">
-          Alles wat u moet weten over onze veilige escrow protocollen, geanonimiseerde accountnoteringen, geautomatiseerde daghuur en Investbotiq koppelingen.
+          Alles wat u moet weten over onze veilige escrow protocollen, geanonimiseerde accountnoteringen, geautomatiseerde daghuur en API-koppelingen.
         </p>
       </div>
 
@@ -184,13 +184,13 @@ export function FaqTab() {
             Staat uw specifieke vraag er niet tussen?
           </h4>
           <p className="text-slate-400 text-xs font-sans">
-            Onze gespecialiseerde arbitrage deskmedewerkers staan klaar om al uw vragen persoonlijk te beantwoorden.
+            Onze supportdesk en dispuutbehandelaars staan klaar om al uw vragen persoonlijk te beantwoorden.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-emerald-400 font-bold">
-            desk@logs.rent
+            info@logs.rent
           </span>
         </div>
       </div>

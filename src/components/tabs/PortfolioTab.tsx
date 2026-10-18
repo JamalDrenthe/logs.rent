@@ -128,7 +128,7 @@ export function PortfolioTab({
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
               Jouw Persoonlijke Account Dashboard &amp; <br />
               <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                Digitale Log Operations Console
+                Accountbeheer &amp; Sessietools
               </span>
             </h2>
 
@@ -245,7 +245,7 @@ export function PortfolioTab({
             Mijn Account &amp; Handelaars Dashboard
           </h2>
           <p className="text-xs text-slate-400 mt-0.5 font-sans">
-            Volledig beheer van je digitale profielen, live TOTP 2FA, anti-detect residentiële proxies, SEPA IBAN en Investbotiq API sleutels.
+            Volledig beheer van je digitale profielen, live TOTP 2FA, anti-detect residentiële proxies, SEPA IBAN en Developer API sleutels.
           </p>
         </div>
 
@@ -360,7 +360,7 @@ export function PortfolioTab({
           }`}
         >
           <Bot className="w-4 h-4 text-amber-400" />
-          <span>API &amp; Handelsbots</span>
+          <span>API &amp; Automatisering</span>
         </button>
 
         <button

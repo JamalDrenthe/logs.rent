@@ -67,7 +67,7 @@ export function AdminTab({
             Platform &amp; Escrow Beheerpaneel
           </h2>
           <p className="text-xs text-slate-300 max-w-2xl leading-relaxed mt-1">
-            Volledige controle over actieve listings, dispuutarbitrage, smart escrow borgsommen en
+            Volledige controle over actieve listings, dispuutbeslechting, escrow borgsommen en
             Firebase live synchronisatie voor <strong className="text-emerald-400">logs.rent</strong>.
           </p>
         </div>
@@ -143,7 +143,7 @@ export function AdminTab({
           }`}
         >
           <Gavel className="w-4 h-4" />
-          <span>Dispuut Arbitrage ({pendingDisputes.length})</span>
+          <span>Disputen &amp; Geschillen ({pendingDisputes.length})</span>
         </button>
 
         <button
@@ -185,7 +185,7 @@ export function AdminTab({
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-white font-mono flex items-center gap-2">
               <ShieldAlert className="w-4 h-4 text-amber-400" />
-              <span>Geschillen die arbitrage vereisen</span>
+              <span>Lopende geschillen ter beoordeling</span>
             </h3>
             <span className="text-xs text-slate-400 font-mono">
               Escrow borgsommen worden automatisch vrijgegeven of teruggestort.

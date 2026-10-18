@@ -46,11 +46,11 @@ export function ValuatieTab({ onOpenListingModal }: ValuatieTabProps) {
           <div className="mb-6 pb-4 border-b border-slate-800">
             <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
               <Calculator className="w-5 h-5 text-emerald-400" />
-              <span>Geautomatiseerd Account Waarderings & Valuatie Algoritme</span>
+              <span>Account Waarderingscalculator</span>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              Bereken direct de reële beurswaarde, geschatte daghuur, risico gradering (A/B/C) en
-              borgstelling op basis van historische beursdata.
+              Bereken direct een realistische vraagprijs, geschat daghuurtarief en geadviseerde
+              borgsom op basis van platform, volgers of ritten, accountleeftijd en verificatiestatus.
             </p>
           </div>
 

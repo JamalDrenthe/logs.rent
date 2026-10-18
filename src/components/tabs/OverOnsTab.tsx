@@ -18,8 +18,8 @@ export function OverOnsTab() {
       icon: TrendingUp
     },
     {
-      title: 'Investbotiq Automatiserings Hub',
-      desc: 'Met onze officiële API en WebSocket interfaces kunnen geautomatiseerde trading agents 24 uur per dag accounts huren, arbitreren en direct renderen met minimale latentie.',
+      title: 'Geautomatiseerde Handoff & 2FA',
+      desc: 'Kopers en huurders ontvangen direct geauthenticeerde sessie-cookies en live gesynchroniseerde 2FA-codes, waardoor overdrachten snel en zonder platformwaarschuwingen verlopen.',
       icon: Cpu
     }
   ];
@@ -27,23 +27,23 @@ export function OverOnsTab() {
   const milestones = [
     {
       year: '2023',
-      title: 'Oprichting Logs Rent Beurs',
-      text: 'Lancering van de allereerste geautomatiseerde escrow beurs voor digitale profielen en sociale activa met gegarandeerde borgstelling.'
+      title: 'Oprichting Logs Rent Marktplaats',
+      text: 'Lancering van het geautomatiseerde escrow platform voor veilige verkoop en verhuur van digitale accounts.'
     },
     {
       year: '2024',
-      title: 'Introductie Residentiële Proxy Pairing',
-      text: 'Ontwikkeling van onze gepatenteerde IP matching technologie waardoor externe netwerken geen verdachte login sprongen waarnemen.'
+      title: 'Introductie Residentiële Proxies & Sessie-Export',
+      text: 'Koppeling van residentiële proxy-adressen en sessie-export, waardoor accounts ingelogd blijven zonder verdachte locatiesprongen.'
     },
     {
       year: '2025',
-      title: 'Investbotiq Algoritmische Integratie',
-      text: 'Koppeling met geavanceerde handelsbots en API protocollen voor high frequency accountverhuur en geautomatiseerde TOTP verificaties.'
+      title: '2FA Handoff Wizard & Developer API',
+      text: 'Lancering van de realtime 2FA Handoff Wizard en developer REST API voor geautomatiseerd beheer van actieve accounts.'
     },
     {
       year: '2026',
-      title: 'Volledige Decentrale Arbitrage',
-      text: 'Meer dan 3.400 geverifieerde accounts actief verhandeld met een 99.8% geschilvrije transactiehistorie binnen de Europese markt.'
+      title: 'Dispuutcentrum & SEPA Bankuitbetalingen',
+      text: 'Introductie van onafhankelijke geschillenbeslechting via het Dispuutcentrum en directe SEPA IBAN-uitbetalingen van huurinkomsten.'
     }
   ];
 
@@ -122,8 +122,8 @@ export function OverOnsTab() {
 
           <div className="p-4 bg-[#0F172A] rounded-xl border border-slate-850">
             <span className="text-xs text-slate-400 block mb-1">Gemiddelde Handoff Tijd</span>
-            <span className="text-2xl font-black text-amber-400">12 Sec</span>
-            <span className="text-[11px] text-slate-400 block mt-1">TOTP en Cookie Injectie</span>
+            <span className="text-2xl font-black text-amber-400">&lt; 2 Min</span>
+            <span className="text-[11px] text-slate-400 block mt-1">Directe 2FA &amp; Sessie</span>
           </div>
         </div>
       </div>

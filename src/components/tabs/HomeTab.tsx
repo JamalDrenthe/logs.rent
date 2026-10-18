@@ -60,8 +60,8 @@ export function HomeTab({
   const stats = [
     { label: isNl ? '24u Handelsvolume' : '24h Trading Volume', value: '€ 482.910', note: '+14.8%', color: 'text-emerald-400' },
     { label: isNl ? 'Actieve Logs & Accounts' : 'Active Logs & Accounts', value: '3.492 Stuks', note: isNl ? 'Geverifieerd' : 'Verified', color: 'text-cyan-400' },
-    { label: isNl ? 'Escrow Borg Beschermd' : 'Protected Escrow Deposits', value: '€ 128.450', note: '100% Veilig', color: 'text-emerald-400' },
-    { label: isNl ? 'Investbotiq Bot Trades' : 'Investbotiq Bot Trades', value: '41.5%', note: 'High-Freq', color: 'text-amber-400' },
+    { label: isNl ? 'Borgsommen in Escrow' : 'Protected Escrow Deposits', value: '€ 128.450', note: isNl ? 'Gedekt in kassa' : 'Held in vault', color: 'text-emerald-400' },
+    { label: isNl ? 'Gemiddelde Overdracht' : 'Avg. Transfer Time', value: '< 2 min', note: isNl ? 'Directe 2FA' : 'Instant 2FA', color: 'text-amber-400' },
   ];
 
   const steps = [
@@ -132,7 +132,7 @@ export function HomeTab({
                 </span>
               </div>
               <p className="text-slate-400 text-[11px] mt-0.5">
-                Ingelogd als {currentUser || 'info@logs.rent'} • Volledige beheer-, moderatie- en escrow arbitragerechten
+                Ingelogd als {currentUser || 'info@logs.rent'} • Volledige beheer-, moderatie- en geschillenbeslechting
               </p>
             </div>
           </div>
@@ -205,17 +205,12 @@ export function HomeTab({
 
       {/* 1. HERO SECTION */}
       <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/90 via-[#080C14] to-[#080C14] p-6 sm:p-10 lg:p-14 shadow-2xl">
-        {/* Glow ambient effects */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 -right-32 w-96 h-96 rounded-full bg-cyan-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-
         <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* Left Hero Content */}
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{isNl ? 'DE NIEUWE STANDAARD VOOR DIGITALE ACCOUNTS' : 'THE NEXT-GEN DIGITAL ASSET EXCHANGE'}</span>
+              <span>{isNl ? 'BETROUWBARE ACCOUNT & LOG MARKTPLAATS' : 'VERIFIED ACCOUNT & LOG EXCHANGE'}</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
@@ -240,8 +235,8 @@ export function HomeTab({
 
             <p className="text-slate-300 text-base sm:text-lg max-w-xl leading-relaxed">
               {isNl
-                ? 'Logs Rent verenigt realtime orderboeken, directe dagverhuur en geautomatiseerde 2FA-overdracht. Koop premium accounts onder Logs of verdien dagelijkse passieve yield onder Rent.'
-                : 'Logs Rent combines realtime order books, flexible daily rentals, and automated 2FA handoffs. Acquire premium assets under Logs or earn daily passive yield under Rent.'}
+                ? 'Koop geverifieerde accounts in permanent eigendom of huur flexibel per dag. Alle transacties zijn beschermd met een verplichte borgsom in escrow en een gecontroleerde 2FA-overdracht.'
+                : 'Acquire verified digital accounts or rent them flexibly per day. All orders are protected with an escrow security deposit and verified 2FA handoff.'}
             </p>
 
             {/* Main Action CTAs */}
@@ -390,15 +385,15 @@ export function HomeTab({
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-cyan-400 font-mono text-xs">
             <Layers className="w-3.5 h-3.5" />
-            <span>{isNl ? 'ONTDEK HET PLATFORM' : 'PLATFORM PILLARS'}</span>
+            <span>{isNl ? 'TWEE MANIEREN VAN HANDELEN' : 'TWO WAYS TO TRADE'}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            {isNl ? 'Kies jouw handelsstrategie: Logs of Rent' : 'Choose Your Strategy: Logs or Rent'}
+            {isNl ? 'Kopen of huren: Logs versus Rent' : 'Buy or Rent: Logs versus Rent'}
           </h2>
           <p className="text-slate-400 text-sm">
             {isNl
-              ? 'Of je nu op zoek bent naar permanent account-eigendom of maximale kapitaalefficiëntie via flexibele dagverhuur.'
-              : 'Whether you seek permanent asset ownership or maximum capital efficiency via flexible daily leases.'}
+              ? 'Onder Logs koop je accounts in permanent eigendom met volledige e-mailtoegang. Onder Rent huur je accounts per dag of verhuur je eigen accounts voor dagelijkse inkomsten.'
+              : 'Under Logs you acquire permanent accounts with original email access. Under Rent you lease accounts daily or list your own for regular rental income.'}
           </p>
         </div>
 
@@ -467,12 +462,12 @@ export function HomeTab({
 
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-white group-hover:text-emerald-300 transition-colors">
-                {isNl ? 'Rent: Dagverhuur & Passieve Beursyield' : 'Rent: Daily Leases & Exchange Yield'}
+                {isNl ? 'Rent: Tijdelijk Huren & Dagelijkse Inkomsten' : 'Rent: Daily Leases & Rental Income'}
               </h3>
               <p className="text-slate-300 text-sm leading-relaxed">
                 {isNl
-                  ? 'Betreed de beurs om accounts per dag of week te huren. Ideaal voor tijdelijke campagnes, ritten of projecten. Bezit je zelf accounts? Verhuur ze en ontvang dagelijks gegarandeerde huurinkomsten met 100% borg.'
-                  : 'Access the exchange to rent accounts per day or week. Ideal for temporary campaigns, drives, or projects. Own idle accounts? Lease them for guaranteed daily yield with 100% deposit protection.'}
+                  ? 'Betreed de beurs om accounts per dag of week te huren voor tijdelijke campagnes, ritten of projecten. Bezit je zelf accounts? Verhuur ze en ontvang dagelijks huurinkomsten met 100% borgbescherming.'
+                  : 'Access the exchange to rent accounts per day or week for projects and operations. Own idle accounts? Lease them for steady daily income with escrow protection.'}
               </p>
             </div>
 
@@ -647,19 +642,20 @@ export function HomeTab({
       {/* 5. INVESTBOTIQ & VALUATIE SPOTLIGHT DUAL BANNERS */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Investbotiq Banner */}
+        {/* Automatisering & API Banner */}
         <div className="lg:col-span-7 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-[#0F172A] to-[#080C14] p-8 flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs">
               <Bot className="w-3.5 h-3.5" />
-              <span>{isNl ? 'ALGORITMISCHE HANDEL' : 'ALGORITHMIC TRADING'}</span>
+              <span>{isNl ? 'VOORRAADBEHEER & API' : 'INVENTORY MANAGEMENT & API'}</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
-              Investbotiq™ Arbitrage Bot
+              {isNl ? 'Geautomatiseerd Order- & Voorraadbeheer' : 'Automated Order & Inventory API'}
             </h3>
             <p className="text-slate-300 text-sm leading-relaxed max-w-lg">
               {isNl
-                ? 'Koppel je eigen trading bot via onze low-latency WebSocket en REST API. Automatiseer arbitrage tussen vraag- en aanbodorders en beheer geautomatiseerde dagverhuur.'
-                : 'Connect your trading bot via our low-latency WebSocket and REST API. Automate arbitrage between bids/asks and auto-manage daily rentals.'}
+                ? 'Beheer je listings op schaal via onze REST API en realtime webhooks. Ontvang direct notificaties bij een nieuwe huurperiode, sessie-controle of borguitkering.'
+                : 'Manage your listings at scale via our REST API and realtime webhooks. Get immediate event notifications for rental starts, session checks, and escrow payouts.'}
             </p>
           </div>
 
@@ -669,7 +665,7 @@ export function HomeTab({
               className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center gap-2 shadow-lg shadow-amber-500/20"
             >
               <Zap className="w-4 h-4 text-slate-950" />
-              <span>{isNl ? 'Open Investbotiq Paneel' : 'Open Investbotiq Tab'}</span>
+              <span>{isNl ? 'Open Automatisering' : 'Open Automation'}</span>
             </button>
             <button
               onClick={() => onNavigate('api')}
@@ -708,16 +704,16 @@ export function HomeTab({
         </div>
       </section>
 
-      {/* 6. VEILIGHEID & OPSEC VOORDELEN */}
+      {/* 6. VEILIGHEID & BESCHERMING */}
       <section className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-3xl font-extrabold text-white tracking-tight">
-            {isNl ? 'Beveiliging op Instititioneel Niveau' : 'Institutional-Grade Security'}
+            {isNl ? 'Veiligheid & Bescherming bij elke transactie' : 'Security & Protection on Every Transaction'}
           </h2>
           <p className="text-slate-400 text-sm">
             {isNl
-              ? 'Gebouwd voor privacy-bewuste handelaren, professionele verhuurders en high-volume operaties.'
-              : 'Engineered for privacy-centric traders, professional operators, and high-volume managers.'}
+              ? 'Ontworpen voor betrouwbare overdrachten, zonder risico op plotselinge accountblokkades of onbetaalde huur.'
+              : 'Designed for dependable account handoffs without unauthorized changes or unpaid rental fees.'}
           </p>
         </div>
 
@@ -748,7 +744,7 @@ export function HomeTab({
 
           <div className="p-5 rounded-2xl bg-[#0F172A] border border-slate-800 space-y-2.5">
             <Award className="w-6 h-6 text-amber-400" />
-            <h4 className="font-bold text-white text-sm">{isNl ? 'Dispuut Arbitrage' : 'Dispute Arbitration'}</h4>
+            <h4 className="font-bold text-white text-sm">{isNl ? 'Dispuutbehandeling' : 'Dispute Resolution'}</h4>
             <p className="text-slate-400 text-[11px] font-sans">
               {isNl ? 'Automatische server-audits en IP-conflict detectie bij onterechte claims.' : 'Automated server audits and IP conflict detection on dispute claims.'}
             </p>

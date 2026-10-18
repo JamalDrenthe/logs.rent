@@ -191,7 +191,7 @@ export function AccountOverview({
           </div>
 
           <div className="text-[10px] text-slate-400 mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span>Arbitrage garantie:</span>
+            <span>Escrow-garantie:</span>
             <span className="text-emerald-400 font-bold">100% Gedekt</span>
           </div>
         </div>
@@ -442,7 +442,7 @@ export function AccountOverview({
               <div className="p-3 bg-[#080C14] rounded-xl border border-slate-850 flex items-center justify-between">
                 <div>
                   <span className="text-white font-bold block">Residentiële Proxy Pairing</span>
-                  <span className="text-slate-400 text-[10px]">Amsterdam Ziggo Pool (0% ban risk)</span>
+                  <span className="text-slate-400 text-[10px]">Amsterdam Pool (&lt; 1% detectierisico)</span>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-bold text-[10px]">
                   GEKOPPELD
@@ -451,7 +451,7 @@ export function AccountOverview({
 
               <div className="p-3 bg-[#080C14] rounded-xl border border-slate-850 flex items-center justify-between">
                 <div>
-                  <span className="text-white font-bold block">Smart Escrow Vault</span>
+                  <span className="text-white font-bold block">Escrow Vault</span>
                   <span className="text-slate-400 text-[10px]">Geautomatiseerde borgstelling</span>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold text-[10px]">

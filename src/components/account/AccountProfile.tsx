@@ -269,11 +269,11 @@ export function AccountProfile({
 
             <div className="p-4 bg-[#080C14] border border-slate-800 rounded-xl space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-white text-xs">Level 3: Institutioneel</span>
+                <span className="font-bold text-white text-xs">Level 3: Zakelijk / Pro</span>
                 <span className="text-slate-500 text-[10px] font-bold">GEVERIFIEERD</span>
               </div>
               <p className="text-[11px] text-slate-400">
-                KvK verificatie en API bot toegang. Onbeperkt order- en arbitragevolume.
+                KvK-verificatie en volledige API-toegang. Hoge orderlimieten voor zakelijke handelaren.
               </p>
             </div>
           </div>

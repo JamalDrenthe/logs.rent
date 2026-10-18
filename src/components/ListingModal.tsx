@@ -205,7 +205,7 @@ export function ListingModal({ isOpen, onClose, onAddListing }: ListingModalProp
           <div className="p-3 bg-[#080C14] border border-slate-800 rounded-xl flex items-center justify-between">
             <span className="text-slate-400">Automatische Status Classificatie:</span>
             <span className="bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/30">
-              {estimatedGrade} Grade (0% Ban Risk)
+              {estimatedGrade} Grade ({estimatedGrade === 'A' ? 'Minimaal' : estimatedGrade === 'B' ? 'Laag' : 'Verhoogd'} Ban-risico)
             </span>
           </div>
 

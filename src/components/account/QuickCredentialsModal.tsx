@@ -142,7 +142,7 @@ export function QuickCredentialsModal({
             className="text-cyan-400 hover:text-cyan-300 text-[11px] font-bold flex items-center gap-1 transition"
           >
             <Sliders className="w-3 h-3" />
-            <span>Open Volledige Operations Console &rarr;</span>
+            <span>Open Volledige Account Console &rarr;</span>
           </button>
 
           <button

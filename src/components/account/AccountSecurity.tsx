@@ -49,7 +49,7 @@ export function AccountSecurity({ currentUserEmail = 'info@logs.rent' }: Account
   const auditLogs = [
     { id: '1', event: 'Inloggen geslaagd via Google OAuth', ip: '82.161.44.120', time: 'Vandaag 09:12', status: 'Succesvol' },
     { id: '2', event: 'SEPA IBAN verificatie voltooid', ip: '82.161.44.120', time: '12 Okt 14:30', status: 'Gevalideerd' },
-    { id: '3', event: 'Investbotiq API sleutel aangemaakt', ip: '82.161.44.120', time: '10 Okt 11:20', status: 'Succesvol' },
+    { id: '3', event: 'Developer API-sleutel gegenereerd', ip: '82.161.44.120', time: '10 Okt 11:20', status: 'Succesvol' },
     { id: '4', event: '2FA TOTP handshake gecontroleerd', ip: '188.206.91.42', time: '08 Okt 18:05', status: 'Succesvol' }
   ];
 
