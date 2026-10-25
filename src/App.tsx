@@ -26,7 +26,7 @@ import { BidTradeModal } from './components/BidTradeModal';
 import { HandoffWizardModal } from './components/HandoffWizardModal';
 import { ListingModal } from './components/ListingModal';
 import { AuthModal } from './components/AuthModal';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './lib/firebase';
 
 import { HomeTab } from './components/tabs/HomeTab';
@@ -42,6 +42,8 @@ const DispuutTab = lazy(() => import('./components/tabs/DispuutTab').then((m) =>
 const ApiPortalTab = lazy(() => import('./components/tabs/ApiPortalTab').then((m) => ({ default: m.ApiPortalTab })));
 const AnonymityGuideTab = lazy(() => import('./components/tabs/AnonymityGuideTab').then((m) => ({ default: m.AnonymityGuideTab })));
 const OverOnsTab = lazy(() => import('./components/tabs/OverOnsTab').then((m) => ({ default: m.OverOnsTab })));
+const CareerTab = lazy(() => import('./components/tabs/CareerTab').then((m) => ({ default: m.CareerTab })));
+const AuthTab = lazy(() => import('./components/tabs/AuthTab').then((m) => ({ default: m.AuthTab })));
 const ContactTab = lazy(() => import('./components/tabs/ContactTab').then((m) => ({ default: m.ContactTab })));
 const FaqTab = lazy(() => import('./components/tabs/FaqTab').then((m) => ({ default: m.FaqTab })));
 
@@ -61,11 +63,14 @@ import {
   EyeOff,
   Plus,
   User,
+  UserPlus,
+  LogOut,
   CheckCircle2,
   Lock,
   Info,
   HelpCircle,
   Mail,
+  Briefcase,
   Moon,
   Sun,
   Languages
@@ -144,9 +149,23 @@ export default function App() {
   const [isHandoffOpen, setIsHandoffOpen] = useState<boolean>(false);
   const [isListingOpen, setIsListingOpen] = useState<boolean>(false);
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
 
   // Toast notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.error('Signout error:', e);
+    }
+    setCurrentUser(null);
+    triggerToast('Je bent succesvol uitgelogd.');
+    if (activeTab === 'portfolio' || activeTab === 'admin') {
+      setActiveTab('home');
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -203,6 +222,8 @@ export default function App() {
       list: 'Noteren',
       trader: 'Handelaar',
       login: 'Inloggen',
+      register: 'Registreren',
+      logout: 'Log uit',
       stats: ['24u Handelsvolume', 'Actieve Accounts', 'Escrow Borgsommen', 'A-Grade Accounts', 'Succesvolle Overdrachten'],
       footer: 'Realtime Digitale Account & Flex Activa Marktplaats',
       theme: 'Donkere modus',
@@ -220,6 +241,8 @@ export default function App() {
       list: 'List asset',
       trader: 'Trader',
       login: 'Sign in',
+      register: 'Register',
+      logout: 'Log out',
       stats: ['24h Market Volume', 'Active Accounts', 'Escrow Deposits', 'A-Grade Accounts', 'Verified Handoffs'],
       footer: 'Realtime Digital Account & Flexible Asset Marketplace',
       theme: 'Light mode',
@@ -545,25 +568,26 @@ export default function App() {
     { key: 'home', label: 'Home', icon: Home },
     { key: 'logs', label: 'Logs', icon: Store },
     { key: 'rent', label: 'Rent', icon: TrendingUp },
+    { key: 'about', label: 'About', icon: Info },
+    { key: 'career', label: language === 'nl' ? 'Vacatures' : 'Careers', icon: Briefcase },
+    { key: 'contact', label: 'Contact', icon: Mail },
     { key: 'portfolio', label: language === 'nl' ? 'Account Centrum' : 'Account Center', icon: LayoutDashboard },
+    ...(isAdmin ? [{ key: 'admin', label: 'Admin', icon: ShieldAlert }] : []),
     { key: 'investbotiq', label: language === 'nl' ? 'Automatisering' : 'Automation', icon: Bot },
     { key: 'valuatie', label: language === 'nl' ? 'Valuatie' : 'Valuation', icon: Calculator },
-    ...(isAdmin ? [{ key: 'admin', label: 'Admin', icon: ShieldAlert }] : []),
     { key: 'escrow', label: 'Escrow & 2FA', icon: ShieldCheck },
     { key: 'dispuut', label: language === 'nl' ? 'Dispuut Centrum' : 'Dispute Center', icon: ShieldAlert },
     { key: 'api', label: 'API Portal', icon: Code },
     { key: 'veiligheid', label: language === 'nl' ? 'ToS Veiligheid' : 'ToS Safety', icon: EyeOff },
-    { key: 'overons', label: language === 'nl' ? 'Over Logs Rent' : 'About Logs Rent', icon: Info },
-    { key: 'faq', label: 'FAQ', icon: HelpCircle },
-    { key: 'contact', label: 'Contact', icon: Mail }
+    { key: 'faq', label: 'FAQ', icon: HelpCircle }
   ];
 
   const visibleTabKeys =
     userRole === 'visitor'
-      ? ['home', 'logs', 'rent', 'investbotiq', 'valuatie']
+      ? ['home', 'logs', 'rent', 'about', 'career', 'contact']
       : userRole === 'trader'
-      ? ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie']
-      : ['home', 'logs', 'rent', 'portfolio', 'investbotiq', 'valuatie', 'admin'];
+      ? ['home', 'logs', 'rent', 'about', 'career', 'contact']
+      : ['home', 'logs', 'rent', 'about', 'career', 'contact', 'admin'];
 
   return (
     <div className={`${theme === 'light' ? 'theme-light bg-slate-50 text-slate-900' : 'bg-[#080C14] text-slate-200'} min-w-0 overflow-x-hidden min-h-screen flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-300`}>
@@ -604,6 +628,9 @@ export default function App() {
               onClick={() => {
                 setCurrentUser(null);
                 triggerToast('Weergave: Bezoeker (Gast)');
+                if (activeTab === 'portfolio' || activeTab === 'admin') {
+                  setActiveTab('home');
+                }
               }}
               className={`px-2 py-0.5 rounded-md transition flex items-center gap-1 ${
                 userRole === 'visitor'
@@ -725,77 +752,95 @@ export default function App() {
 
           {/* Actions: Handelskassa Wallet Module & Account Noteren */}
           <div className="ml-auto flex items-center justify-end gap-1.5 shrink-0 sm:gap-2.5">
-            {/* If Trader or Admin: Show Handelskassa Saldo */}
-            {userRole !== 'visitor' ? (
-              <div
-                onClick={() => setIsWalletOpen(true)}
-                className="hidden md:flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm group"
-                title="Klik voor storting of opname uit de Handelskassa"
-              >
-                <div className="text-right font-mono">
-                  <span className="text-[9px] text-slate-400 block leading-none">
-                    {copy.wallet}
-                  </span>
-                  <span className="text-xs font-bold text-emerald-400">
-                    € {userBalance.toLocaleString('nl-NL')},00
-                  </span>
-                </div>
-                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
-                  <Plus className="w-3.5 h-3.5" />
-                </div>
+            {/* If Visitor: Show Inloggen and Registreren buttons */}
+            {userRole === 'visitor' ? (
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <button
+                  onClick={() => {
+                    setAuthModalMode('login');
+                    setIsAuthOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 font-mono text-xs cursor-pointer"
+                  title={copy.login}
+                >
+                  <User className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{copy.login}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setAuthModalMode('register');
+                    setIsAuthOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition flex items-center gap-1.5 font-mono text-xs shadow-md shadow-emerald-500/20 cursor-pointer"
+                  title={copy.register}
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>{copy.register}</span>
+                </button>
               </div>
             ) : (
-              /* If Visitor: Show Start als Handelaar button */
-              <button
-                onClick={() => setIsAuthOpen(true)}
-                className="hidden sm:flex bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold text-xs px-3.5 py-2 rounded-xl transition items-center gap-1.5 font-mono shadow-sm"
-              >
-                <Store className="w-3.5 h-3.5" />
-                <span>Start als Handelaar</span>
-              </button>
+              /* If Trader or Admin: Show Handelskassa, Noteren, Account Centrum, and Log uit */
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div
+                  onClick={() => setIsWalletOpen(true)}
+                  className="hidden md:flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-3 py-1.5 rounded-xl cursor-pointer transition shadow-sm group"
+                  title="Klik voor storting of opname uit de Handelskassa"
+                >
+                  <div className="text-right font-mono">
+                    <span className="text-[9px] text-slate-400 block leading-none">
+                      {copy.wallet}
+                    </span>
+                    <span className="text-xs font-bold text-emerald-400">
+                      € {userBalance.toLocaleString('nl-NL')},00
+                    </span>
+                  </div>
+                  <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs group-hover:scale-110 transition-transform">
+                    <Plus className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleOpenListing}
+                  className="hidden sm:flex bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-500/20 font-mono"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{copy.list}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setAccountCenterSection('overview');
+                    setActiveTab('portfolio');
+                  }}
+                  className={`text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 font-mono border ${
+                    activeTab === 'portfolio'
+                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 font-bold'
+                      : userRole === 'admin'
+                      ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-bold'
+                      : 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold'
+                  }`}
+                  title="Open Account Centrum"
+                >
+                  {userRole === 'admin' ? (
+                    <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <User className="w-3.5 h-3.5 text-cyan-400" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {userRole === 'admin' ? 'Admin' : 'Account'}
+                  </span>
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition flex items-center gap-1.5 font-mono text-xs font-bold cursor-pointer"
+                  title={copy.logout}
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{copy.logout}</span>
+                </button>
+              </div>
             )}
-
-            {/* Noteren button (only if trader or admin) */}
-            {userRole !== 'visitor' ? (
-              <button
-                onClick={handleOpenListing}
-                className="hidden sm:flex bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-500/20 font-mono"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{copy.list}</span>
-              </button>
-            ) : null}
-
-            {/* User Login/Auth trigger */}
-            <button
-              onClick={() => {
-                if (userRole !== 'visitor') {
-                  setAccountCenterSection('overview');
-                  setActiveTab('portfolio');
-                } else {
-                  setIsAuthOpen(true);
-                }
-              }}
-              className={`text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 font-mono border ${
-                userRole === 'admin'
-                  ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30 font-bold'
-                  : userRole === 'trader'
-                  ? 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold'
-                  : 'bg-[#0F172A] hover:bg-slate-800 text-slate-200 border-slate-700'
-              }`}
-              title={userRole !== 'visitor' ? 'Open Account Centrum' : 'Inloggen'}
-            >
-              {userRole === 'admin' ? (
-                <ShieldAlert className="w-3.5 h-3.5 text-emerald-400" />
-              ) : userRole === 'trader' ? (
-                <User className="w-3.5 h-3.5 text-cyan-400" />
-              ) : (
-                <User className="w-3.5 h-3.5 text-slate-400" />
-              )}
-              <span className="hidden sm:inline">
-                {userRole === 'admin' ? 'Admin' : userRole === 'trader' ? 'Handelaar' : copy.login}
-              </span>
-            </button>
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="bg-[#0F172A] hover:bg-slate-800 text-slate-300 border border-slate-700 p-2 rounded-xl transition"
@@ -850,6 +895,52 @@ export default function App() {
             </button>
           );
         })}
+
+        {/* Mobile Extra Action: Inloggen/Registreren or Log uit */}
+        {userRole === 'visitor' ? (
+          <>
+            <button
+              onClick={() => {
+                setAuthModalMode('login');
+                setIsAuthOpen(true);
+              }}
+              className="px-2.5 py-1.5 rounded-lg whitespace-nowrap bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1"
+            >
+              <User className="w-3 h-3" />
+              <span>Inloggen</span>
+            </button>
+            <button
+              onClick={() => {
+                setAuthModalMode('register');
+                setIsAuthOpen(true);
+              }}
+              className="px-2.5 py-1.5 rounded-lg whitespace-nowrap bg-emerald-500 text-slate-950 font-bold flex items-center gap-1"
+            >
+              <UserPlus className="w-3 h-3" />
+              <span>Registreren</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => {
+                setAccountCenterSection('overview');
+                setActiveTab('portfolio');
+              }}
+              className="px-2.5 py-1.5 rounded-lg whitespace-nowrap bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-1"
+            >
+              <LayoutDashboard className="w-3 h-3" />
+              <span>Account</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-2.5 py-1.5 rounded-lg whitespace-nowrap bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1 font-bold"
+            >
+              <LogOut className="w-3 h-3" />
+              <span>Log uit</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Main Content View Switcher */}
@@ -976,7 +1067,37 @@ export default function App() {
 
         {activeTab === 'veiligheid' && <AnonymityGuideTab />}
 
-        {activeTab === 'overons' && <OverOnsTab />}
+        {(activeTab === 'overons' || activeTab === 'about') && (
+          <OverOnsTab onNavigate={(tab) => setActiveTab(tab)} />
+        )}
+
+        {(activeTab === 'career' || activeTab === 'vacatures') && (
+          <CareerTab />
+        )}
+
+        {activeTab === 'login' && (
+          <AuthTab
+            initialMode="login"
+            onLoginSuccess={(userEmail) => {
+              setCurrentUser(userEmail);
+              triggerToast(`Welkom terug, ${userEmail}`);
+            }}
+            currentUser={currentUser}
+            onNavigate={setActiveTab}
+          />
+        )}
+
+        {activeTab === 'register' && (
+          <AuthTab
+            initialMode="register"
+            onLoginSuccess={(userEmail) => {
+              setCurrentUser(userEmail);
+              triggerToast('Account succesvol aangemaakt');
+            }}
+            currentUser={currentUser}
+            onNavigate={setActiveTab}
+          />
+        )}
 
         {activeTab === 'faq' && <FaqTab />}
 
@@ -999,10 +1120,24 @@ export default function App() {
 
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-slate-400">
             <button
-              onClick={() => setActiveTab('overons')}
+              onClick={() => setActiveTab('about')}
               className="hover:text-emerald-400 transition cursor-pointer"
             >
-              Over Logs Rent
+              About
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('career')}
+              className="hover:text-emerald-400 transition cursor-pointer"
+            >
+              {language === 'nl' ? 'Vacatures' : 'Careers'}
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('contact')}
+              className="hover:text-emerald-400 transition cursor-pointer"
+            >
+              Contact
             </button>
             <span>•</span>
             <button
@@ -1020,32 +1155,42 @@ export default function App() {
             </button>
             <span>•</span>
             <button
-              onClick={() => setActiveTab('api')}
-              className="hover:text-emerald-400 transition cursor-pointer"
-            >
-              API Portal
-            </button>
-            <span>•</span>
-            <button
-              onClick={() => setActiveTab('veiligheid')}
-              className="hover:text-emerald-400 transition cursor-pointer"
-            >
-              {language === 'nl' ? 'ToS Veiligheid' : 'ToS Safety'}
-            </button>
-            <span>•</span>
-            <button
               onClick={() => setActiveTab('faq')}
               className="hover:text-emerald-400 transition cursor-pointer"
             >
               FAQ
             </button>
             <span>•</span>
-            <button
-              onClick={() => setActiveTab('contact')}
-              className="hover:text-emerald-400 transition cursor-pointer"
-            >
-              Contact
-            </button>
+            {userRole === 'visitor' ? (
+              <>
+                <button
+                  onClick={() => {
+                    setAuthModalMode('login');
+                    setIsAuthOpen(true);
+                  }}
+                  className="hover:text-emerald-400 transition cursor-pointer font-bold text-white"
+                >
+                  Inloggen
+                </button>
+                <span>•</span>
+                <button
+                  onClick={() => {
+                    setAuthModalMode('register');
+                    setIsAuthOpen(true);
+                  }}
+                  className="hover:text-emerald-400 transition cursor-pointer font-bold text-emerald-400"
+                >
+                  Registreren
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="hover:text-rose-400 transition cursor-pointer font-bold text-rose-400"
+              >
+                Log uit
+              </button>
+            )}
             <span>•</span>
             <button
               onClick={handleResetData}
@@ -1101,11 +1246,9 @@ export default function App() {
           setCurrentUser(email);
           triggerToast(`Ingelogd als ${email}${(email === 'info@logs.rent' || email === 'info@jamaldrenthe.com') ? ' (Admin)' : ''}`);
         }}
-        onLogout={() => {
-          setCurrentUser(null);
-          triggerToast('Succesvol uitgelogd');
-        }}
+        onLogout={handleLogout}
         currentUser={currentUser}
+        initialMode={authModalMode}
       />
 
       {/* Toast popup */}

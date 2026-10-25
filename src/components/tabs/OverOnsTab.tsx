@@ -1,6 +1,10 @@
-import { ShieldCheck, TrendingUp, Users, Cpu, Lock, CheckCircle2, Award, Zap } from 'lucide-react';
+import { ShieldCheck, TrendingUp, Users, Cpu, Lock, CheckCircle2, Award, Zap, Briefcase, Mail, ArrowRight } from 'lucide-react';
 
-export function OverOnsTab() {
+interface OverOnsTabProps {
+  onNavigate?: (tab: string) => void;
+}
+
+export function OverOnsTab({ onNavigate }: OverOnsTabProps = {}) {
   const pillars = [
     {
       title: 'Geanonimiseerde Asset Notatie',
@@ -151,6 +155,53 @@ export function OverOnsTab() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Careers & Contact CTA Banner */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <span className="text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Briefcase className="w-4 h-4" />
+              <span>Werken bij de groep</span>
+            </span>
+            <h4 className="text-lg font-bold text-white">
+              Vacatures (13 Openstaande Rollen)
+            </h4>
+            <p className="text-xs text-slate-300 leading-relaxed font-sans">
+              100% remote posities in Tech, AI, B2B Growth, Executive Search en Corporate Finance.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate ? onNavigate('career') : window.location.hash = 'career'}
+            className="self-start px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs font-mono transition flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+          >
+            <span>Bekijk Alle Vacatures</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+          <div className="space-y-2">
+            <span className="text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Mail className="w-4 h-4" />
+              <span>Vragen of Partnerschap?</span>
+            </span>
+            <h4 className="text-lg font-bold text-white">
+              Neem Direct Contact Op
+            </h4>
+            <p className="text-xs text-slate-300 leading-relaxed font-sans">
+              Onze supportdesk en management staan klaar om al uw vragen te beantwoorden.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate ? onNavigate('contact') : window.location.hash = 'contact'}
+            className="self-start px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-xl text-xs font-mono transition flex items-center gap-2"
+          >
+            <span>Naar Contactpagina</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     </div>

@@ -10,10 +10,11 @@ interface AuthModalProps {
   onLoginSuccess: (userEmail: string) => void;
   onLogout?: () => void;
   currentUser: string | null;
+  initialMode?: 'login' | 'register';
 }
 
-export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUser }: AuthModalProps) {
-  const [isRegister, setIsRegister] = useState<boolean>(false);
+export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUser, initialMode = 'login' }: AuthModalProps) {
+  const [isRegister, setIsRegister] = useState<boolean>(initialMode === 'register');
   const [email, setEmail] = useState<string>('handelaar@logs.rent');
   const [password, setPassword] = useState<string>('••••••••••••');
   const [loading, setLoading] = useState<boolean>(false);
