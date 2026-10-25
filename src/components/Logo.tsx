@@ -37,8 +37,6 @@ export function Logo({ className = 'w-9 h-9', variant = 'dark' }: LogoProps) {
           d="M 46 48 L 60 48 L 60 78 L 46 78 Z"
           fill={markColor}
         />
-
-        <circle cx="43" cy="91" r="5" fill="#10B981" />
       </svg>
     </div>
   );
