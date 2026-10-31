@@ -10,6 +10,7 @@ interface ListingModalProps {
 
 export function ListingModal({ isOpen, onClose, onAddListing }: ListingModalProps) {
   const [category, setCategory] = useState<AccountCategory>('social');
+  const [company, setCompany] = useState<string>('ByteDance Ltd.');
   const [platform, setPlatform] = useState<string>('TikTok');
   const [title, setTitle] = useState<string>('');
   const [price, setPrice] = useState<number>(1250);
@@ -27,11 +28,22 @@ export function ListingModal({ isOpen, onClose, onAddListing }: ListingModalProp
     e.preventDefault();
     if (!title.trim()) return;
 
+    const categoryNames: Record<AccountCategory, string> = {
+      social: 'Social Media & Creators',
+      ads_agency: 'E-Commerce & Advertenties',
+      gaming: 'Gaming & Esports',
+      flex: 'Flexwerk & Gig-Economy',
+      developer: 'Developer & Cloud Infrastructuur',
+      fintech: 'Fintech & Bedrijfsaccounts'
+    };
+
     const newId = Math.floor(1000 + Math.random() * 9000);
     const newAccount: AccountListing = {
       id: newId,
       title: title.trim(),
       category,
+      categoryName: categoryNames[category] || 'Digitaal Ecosysteem',
+      company: company.trim() || 'Onafhankelijke Uitgever',
       platform,
       grade: estimatedGrade,
       price: Number(price),
@@ -109,7 +121,7 @@ export function ListingModal({ isOpen, onClose, onAddListing }: ListingModalProp
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 font-mono text-xs">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-slate-400 mb-1">Sector Categorie</label>
               <select
@@ -117,17 +129,48 @@ export function ListingModal({ isOpen, onClose, onAddListing }: ListingModalProp
                 onChange={(e) => {
                   const cat = e.target.value as AccountCategory;
                   setCategory(cat);
-                  setPlatform(cat === 'social' ? 'TikTok' : cat === 'gaming' ? 'PlayStation' : 'Uber');
+                  if (cat === 'social') {
+                    setPlatform('TikTok');
+                    setCompany('ByteDance Ltd.');
+                  } else if (cat === 'ads_agency') {
+                    setPlatform('Meta Ads');
+                    setCompany('Meta Platforms Inc.');
+                  } else if (cat === 'gaming') {
+                    setPlatform('PlayStation');
+                    setCompany('Sony Interactive Entertainment');
+                  } else if (cat === 'flex') {
+                    setPlatform('Uber');
+                    setCompany('Uber Technologies Inc.');
+                  } else if (cat === 'developer') {
+                    setPlatform('Discord');
+                    setCompany('Discord Inc.');
+                  } else if (cat === 'fintech') {
+                    setPlatform('Stripe');
+                    setCompany('Stripe Inc.');
+                  }
                 }}
                 className="w-full bg-[#080C14] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
               >
-                <option value="social">Social Media</option>
-                <option value="gaming">Gaming Platform</option>
-                <option value="flex">Flexwerk & Gig</option>
+                <option value="social">Social Media & Creators</option>
+                <option value="ads_agency">E-Commerce & Advertenties</option>
+                <option value="gaming">Gaming & Esports</option>
+                <option value="flex">Flexwerk & Gig-Economy</option>
+                <option value="developer">Developer & Cloud</option>
+                <option value="fintech">Fintech & Zakelijk</option>
               </select>
             </div>
             <div>
-              <label className="block text-slate-400 mb-1">Specifiek Platform</label>
+              <label className="block text-slate-400 mb-1">Bedrijf / Uitgever</label>
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="ByteDance, Meta, Sony, Valve..."
+                className="w-full bg-[#080C14] border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Platform / Ecosysteem</label>
               <input
                 type="text"
                 value={platform}

@@ -1,10 +1,64 @@
 import { AccountListing, OrderBookEntry, RecentTrade, PortfolioItem, DisputeItem, WalletTransaction, UserProfile } from '../types';
 
+export const CATEGORY_DEFINITIONS = [
+  {
+    key: 'all',
+    name: 'Alle Sectoren & Bedrijven',
+    shortName: 'Alle Sectoren',
+    description: 'Volledig overzicht van alle geverifieerde accounts, bedrijven en logs.',
+    icon: 'Layers'
+  },
+  {
+    key: 'social',
+    name: 'Social Media & Creators',
+    shortName: 'Social & Creators',
+    description: 'Geverifieerde influencer profielen, TikTok Creator Funds en hoge impressies.',
+    icon: 'Share2'
+  },
+  {
+    key: 'ads_agency',
+    name: 'E-Commerce & Advertenties',
+    shortName: 'Ads & E-Commerce',
+    description: 'Agency advertentie-accounts, uncapped ad spend en Google/Meta merchant hubs.',
+    icon: 'Megaphone'
+  },
+  {
+    key: 'gaming',
+    name: 'Gaming & Esports',
+    shortName: 'Gaming & Esports',
+    description: 'PlayStation, Steam en Xbox accounts met zeldzame inventarissen en AAA-bibliotheken.',
+    icon: 'Gamepad2'
+  },
+  {
+    key: 'flex',
+    name: 'Flexwerk & Gig-Economy',
+    shortName: 'Flex & Gig Work',
+    description: '5-sterren beoordeelde profielen voor directe horeca shifts, koeriersdiensten en VIP-ritten.',
+    icon: 'Briefcase'
+  },
+  {
+    key: 'developer',
+    name: 'Developer & Cloud Infrastructuur',
+    shortName: 'Dev & Cloud',
+    description: 'Verified bot tokens, GitHub aged profielen en geavanceerde cloud-API tiers.',
+    icon: 'Code'
+  },
+  {
+    key: 'fintech',
+    name: 'Fintech & Bedrijfsaccounts',
+    shortName: 'Fintech & Zakelijk',
+    description: 'Geverifieerde merchant-accounts, instant SEPA uitbetalingen en clean credit-lines.',
+    icon: 'CreditCard'
+  }
+] as const;
+
 export const INITIAL_ACCOUNTS: AccountListing[] = [
   {
     id: 9812,
     title: 'TikTok Verified Creator 85K',
     category: 'social',
+    categoryName: 'Social Media & Creators',
+    company: 'ByteDance Ltd.',
     platform: 'TikTok',
     grade: 'A',
     price: 1450,
@@ -42,28 +96,30 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
     status: 'rented'
   },
   {
-    id: 4021,
-    title: 'Discord Early Supporter + Bot Dev (18K)',
-    category: 'flex',
-    platform: 'Discord',
+    id: 6104,
+    title: 'Instagram Verified Influencer 120K (Lifestyle & E-Com)',
+    category: 'social',
+    categoryName: 'Social Media & Creators',
+    company: 'Meta Platforms Inc.',
+    platform: 'Instagram',
     grade: 'A',
-    price: 2100,
-    rentPerDay: 60,
-    change24h: '+4.2%',
+    price: 2450,
+    rentPerDay: 55,
+    change24h: '+6.8%',
     isPositiveChange: true,
     history: {
-      '1D': [2080, 2085, 2090, 2095, 2100, 2100],
-      '1W': [1900, 1950, 2000, 2050, 2080, 2100, 2100],
-      '1M': [1750, 1820, 1890, 1950, 2020, 2080, 2100],
-      '1Y': [1300, 1450, 1600, 1780, 1920, 2050, 2100],
-      'ALL': [900, 1200, 1500, 1750, 1950, 2100]
+      '1D': [2410, 2420, 2435, 2440, 2448, 2450],
+      '1W': [2200, 2260, 2310, 2380, 2410, 2430, 2450],
+      '1M': [1950, 2050, 2150, 2250, 2340, 2400, 2450],
+      '1Y': [1500, 1700, 1900, 2100, 2280, 2390, 2450],
+      'ALL': [1000, 1350, 1650, 1950, 2200, 2450]
     },
     volumeHistory: {
-      '1D': [35, 48, 52, 60, 75, 88],
-      '1W': [95, 110, 135, 160, 185, 220, 260],
-      '1M': [380, 420, 490, 540, 620, 710, 830],
-      '1Y': [1400, 1650, 1900, 2200, 2550, 2800, 3100],
-      'ALL': [2800, 3600, 4700, 5900, 7100, 8600]
+      '1D': [50, 65, 75, 88, 102, 125],
+      '1W': [140, 170, 215, 250, 290, 340, 410],
+      '1M': [500, 580, 660, 750, 840, 920, 1080],
+      '1Y': [1900, 2300, 2700, 3100, 3600, 4000, 4500],
+      'ALL': [3400, 4600, 6100, 7800, 9400, 11200]
     },
     labels: {
       '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -72,59 +128,21 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
       '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
       'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
     },
-    followersOrRating: '18.400 leden & Verified Bot',
-    ageYears: '4.2 jaar',
-    verificationLevel: 'Active Developer + Early Badge',
+    followersOrRating: '124.000 volgers',
+    ageYears: '4.8 jaar',
+    verificationLevel: 'Meta Verified Blue Badge + OGE',
     banRiskPercent: 0,
-    escrowBorg: 350,
-    icon: 'discord',
-    description: 'Inclusief verified bot token, custom invite URL en volledige eigendomsrechten met OGE transfer.',
-    status: 'available'
-  },
-  {
-    id: 1192,
-    title: 'PSN Account 140+ AAA Games',
-    category: 'gaming',
-    platform: 'PlayStation',
-    grade: 'B',
-    price: 680,
-    rentPerDay: 18,
-    change24h: '-1.8%',
-    isPositiveChange: false,
-    history: {
-      '1D': [690, 688, 685, 683, 680, 680],
-      '1W': [720, 710, 700, 690, 685, 680, 680],
-      '1M': [750, 740, 730, 710, 695, 685, 680],
-      '1Y': [800, 780, 760, 730, 710, 690, 680],
-      'ALL': [600, 750, 850, 800, 740, 680]
-    },
-    volumeHistory: {
-      '1D': [20, 25, 28, 30, 34, 40],
-      '1W': [60, 75, 80, 90, 105, 115, 130],
-      '1M': [210, 240, 270, 310, 330, 350, 380],
-      '1Y': [900, 1050, 1150, 1300, 1400, 1450, 1500],
-      'ALL': [1800, 2300, 2900, 3400, 3900, 4200]
-    },
-    labels: {
-      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
-      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
-      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
-      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
-    },
-    followersOrRating: 'Level 385 Trophy Tier',
-    ageYears: '6 jaar',
-    verificationLevel: 'PSN Plus Premium 2026',
-    banRiskPercent: 5,
-    escrowBorg: 120,
-    icon: 'playstation',
-    description: 'Bevat o.a. GTA VI Pre-Order, Call of Duty MW3, FIFA 24, Cyberpunk, God of War Ragnarok.',
+    escrowBorg: 400,
+    icon: 'instagram',
+    description: 'Hoge organische engagement (4.8%), actieve stories en DM affiliate sales, 100% clean overdracht.',
     status: 'available'
   },
   {
     id: 8843,
     title: 'X/Twitter Aged 2016 (50K Tech Audience)',
     category: 'social',
+    categoryName: 'Social Media & Creators',
+    company: 'X Corp.',
     platform: 'Twitter X',
     grade: 'A',
     price: 1890,
@@ -164,7 +182,9 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
   {
     id: 3302,
     title: 'Facebook Ads Agency Aged (Unlimited Spend)',
-    category: 'social',
+    category: 'ads_agency',
+    categoryName: 'E-Commerce & Advertenties',
+    company: 'Meta Platforms Inc.',
     platform: 'Facebook',
     grade: 'A',
     price: 1200,
@@ -198,14 +218,142 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
     banRiskPercent: 1,
     escrowBorg: 200,
     icon: 'facebook',
-    description: 'Onbeperkt advertentiebudget per dag, direct gekoppelde Pixel en live support toegang.',
+    description: 'Onbeperkt advertentiebudget per dag, direct gekoppelde Pixel en live agency support toegang.',
     status: 'rented'
+  },
+  {
+    id: 8491,
+    title: 'Google Ads MCC Agency Invoiced (€50K Line)',
+    category: 'ads_agency',
+    categoryName: 'E-Commerce & Advertenties',
+    company: 'Alphabet / Google LLC',
+    platform: 'Google Ads',
+    grade: 'A',
+    price: 3200,
+    rentPerDay: 75,
+    change24h: '+9.4%',
+    isPositiveChange: true,
+    history: {
+      '1D': [3100, 3120, 3150, 3180, 3195, 3200],
+      '1W': [2800, 2890, 2980, 3050, 3120, 3180, 3200],
+      '1M': [2500, 2650, 2800, 2950, 3080, 3150, 3200],
+      '1Y': [1800, 2100, 2400, 2700, 2950, 3100, 3200],
+      'ALL': [1200, 1600, 2100, 2600, 2950, 3200]
+    },
+    volumeHistory: {
+      '1D': [40, 52, 60, 72, 85, 95],
+      '1W': [110, 135, 165, 195, 230, 270, 320],
+      '1M': [420, 480, 550, 620, 700, 780, 890],
+      '1Y': [1500, 1800, 2150, 2500, 2850, 3200, 3600],
+      'ALL': [2900, 3800, 4900, 6100, 7300, 8700]
+    },
+    labels: {
+      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
+      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
+      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
+      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
+    },
+    followersOrRating: 'Google Premier Partner',
+    ageYears: '6.5 jaar',
+    verificationLevel: 'Monthly Invoicing Whitelist',
+    banRiskPercent: 0,
+    escrowBorg: 500,
+    icon: 'chrome',
+    description: 'Facturatie via Google Ireland, directe toewijzing van child accounts en whitelisted Google Merchant Center.',
+    status: 'available'
+  },
+  {
+    id: 1192,
+    title: 'PSN Account 140+ AAA Games',
+    category: 'gaming',
+    categoryName: 'Gaming & Esports',
+    company: 'Sony Interactive Entertainment',
+    platform: 'PlayStation',
+    grade: 'B',
+    price: 680,
+    rentPerDay: 18,
+    change24h: '-1.8%',
+    isPositiveChange: false,
+    history: {
+      '1D': [690, 688, 685, 683, 680, 680],
+      '1W': [720, 710, 700, 690, 685, 680, 680],
+      '1M': [750, 740, 730, 710, 695, 685, 680],
+      '1Y': [800, 780, 760, 730, 710, 690, 680],
+      'ALL': [600, 750, 850, 800, 740, 680]
+    },
+    volumeHistory: {
+      '1D': [20, 25, 28, 30, 34, 40],
+      '1W': [60, 75, 80, 90, 105, 115, 130],
+      '1M': [210, 240, 270, 310, 330, 350, 380],
+      '1Y': [900, 1050, 1150, 1300, 1400, 1450, 1500],
+      'ALL': [1800, 2300, 2900, 3400, 3900, 4200]
+    },
+    labels: {
+      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
+      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
+      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
+      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
+    },
+    followersOrRating: 'Level 385 Trophy Tier',
+    ageYears: '6 jaar',
+    verificationLevel: 'PSN Plus Premium 2026',
+    banRiskPercent: 5,
+    escrowBorg: 120,
+    icon: 'playstation',
+    description: 'Bevat o.a. GTA VI Pre-Order, Call of Duty MW3, FIFA 24, Cyberpunk, God of War Ragnarok.',
+    status: 'available'
+  },
+  {
+    id: 5541,
+    title: 'Steam Account CS2 Prime & Dragon Lore',
+    category: 'gaming',
+    categoryName: 'Gaming & Esports',
+    company: 'Valve Corporation',
+    platform: 'Steam',
+    grade: 'C',
+    price: 420,
+    rentPerDay: 12,
+    change24h: '+15.2%',
+    isPositiveChange: true,
+    history: {
+      '1D': [390, 400, 405, 410, 415, 420],
+      '1W': [300, 320, 350, 380, 400, 410, 420],
+      '1M': [250, 280, 310, 340, 380, 400, 420],
+      '1Y': [180, 220, 260, 310, 360, 390, 420],
+      'ALL': [120, 180, 240, 320, 380, 420]
+    },
+    volumeHistory: {
+      '1D': [45, 55, 68, 80, 92, 105],
+      '1W': [110, 130, 160, 190, 225, 270, 340],
+      '1M': [390, 450, 520, 600, 710, 800, 920],
+      '1Y': [1500, 1800, 2100, 2500, 2900, 3300, 3700],
+      'ALL': [2700, 3600, 4800, 6100, 7500, 9000]
+    },
+    labels: {
+      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
+      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
+      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
+      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
+    },
+    followersOrRating: 'Steam Level 45, 800u CS2',
+    ageYears: '1.2 jaar',
+    verificationLevel: 'Telefoon Gekoppeld',
+    banRiskPercent: 12,
+    escrowBorg: 80,
+    icon: 'steam',
+    description: 'Leuk instap account met Prime matchmaking, inventory skins en clean match history.',
+    status: 'available'
   },
   {
     id: 7710,
     title: 'Flexwerk / Temper Profile 5-Star Hospitality',
     category: 'flex',
-    platform: 'Flexwerk',
+    categoryName: 'Flexwerk & Gig-Economy',
+    company: 'Temper Operations B.V.',
+    platform: 'Temper',
     grade: 'B',
     price: 850,
     rentPerDay: 25,
@@ -242,28 +390,30 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
     status: 'available'
   },
   {
-    id: 5541,
-    title: 'Steam Account CS2 Prime & Dragon Lore',
-    category: 'gaming',
-    platform: 'Steam',
-    grade: 'C',
-    price: 420,
-    rentPerDay: 12,
-    change24h: '+15.2%',
+    id: 3180,
+    title: 'Uber Pro Diamond / VIP Chauffeur (Rating 4.98)',
+    category: 'flex',
+    categoryName: 'Flexwerk & Gig-Economy',
+    company: 'Uber Technologies Inc.',
+    platform: 'Uber',
+    grade: 'A',
+    price: 1150,
+    rentPerDay: 38,
+    change24h: '+2.1%',
     isPositiveChange: true,
     history: {
-      '1D': [390, 400, 405, 410, 415, 420],
-      '1W': [300, 320, 350, 380, 400, 410, 420],
-      '1M': [250, 280, 310, 340, 380, 400, 420],
-      '1Y': [180, 220, 260, 310, 360, 390, 420],
-      'ALL': [120, 180, 240, 320, 380, 420]
+      '1D': [1130, 1135, 1140, 1145, 1150, 1150],
+      '1W': [1020, 1060, 1090, 1115, 1135, 1150, 1150],
+      '1M': [920, 970, 1020, 1070, 1110, 1135, 1150],
+      '1Y': [700, 800, 900, 1000, 1080, 1120, 1150],
+      'ALL': [450, 650, 820, 980, 1080, 1150]
     },
     volumeHistory: {
-      '1D': [45, 55, 68, 80, 92, 105],
-      '1W': [110, 130, 160, 190, 225, 270, 340],
-      '1M': [390, 450, 520, 600, 710, 800, 920],
-      '1Y': [1500, 1800, 2100, 2500, 2900, 3300, 3700],
-      'ALL': [2700, 3600, 4800, 6100, 7500, 9000]
+      '1D': [22, 28, 35, 42, 50, 60],
+      '1W': [70, 85, 105, 125, 150, 180, 210],
+      '1M': [260, 310, 370, 430, 490, 560, 640],
+      '1Y': [1100, 1300, 1550, 1800, 2050, 2250, 2500],
+      'ALL': [2100, 2800, 3600, 4500, 5400, 6400]
     },
     labels: {
       '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -272,13 +422,139 @@ export const INITIAL_ACCOUNTS: AccountListing[] = [
       '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
       'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
     },
-    followersOrRating: 'Steam Level 45, 800u CS2',
-    ageYears: '1.2 jaar',
-    verificationLevel: 'Telefoon Gekoppeld',
-    banRiskPercent: 12,
-    escrowBorg: 80,
-    icon: 'steam',
-    description: 'Leuk instap account met Prime matchmaking, inventory skins en clean match history.',
+    followersOrRating: '4.98 Rating (3.800+ ritten)',
+    ageYears: '3.8 jaar',
+    verificationLevel: 'Uber Pro Diamond Tier',
+    banRiskPercent: 1,
+    escrowBorg: 220,
+    icon: 'car',
+    description: 'Toegang tot VIP & Airport prioriteitsritten in Randstad / Schiphol, inclusief volledige verificatie.',
+    status: 'available'
+  },
+  {
+    id: 4021,
+    title: 'Discord Early Supporter + Bot Dev (18K)',
+    category: 'developer',
+    categoryName: 'Developer & Cloud Infrastructuur',
+    company: 'Discord Inc.',
+    platform: 'Discord',
+    grade: 'A',
+    price: 2100,
+    rentPerDay: 60,
+    change24h: '+4.2%',
+    isPositiveChange: true,
+    history: {
+      '1D': [2080, 2085, 2090, 2095, 2100, 2100],
+      '1W': [1900, 1950, 2000, 2050, 2080, 2100, 2100],
+      '1M': [1750, 1820, 1890, 1950, 2020, 2080, 2100],
+      '1Y': [1300, 1450, 1600, 1780, 1920, 2050, 2100],
+      'ALL': [900, 1200, 1500, 1750, 1950, 2100]
+    },
+    volumeHistory: {
+      '1D': [35, 48, 52, 60, 75, 88],
+      '1W': [95, 110, 135, 160, 185, 220, 260],
+      '1M': [380, 420, 490, 540, 620, 710, 830],
+      '1Y': [1400, 1650, 1900, 2200, 2550, 2800, 3100],
+      'ALL': [2800, 3600, 4700, 5900, 7100, 8600]
+    },
+    labels: {
+      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
+      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
+      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
+      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
+    },
+    followersOrRating: '18.400 leden & Verified Bot',
+    ageYears: '4.2 jaar',
+    verificationLevel: 'Active Developer + Early Badge',
+    banRiskPercent: 0,
+    escrowBorg: 350,
+    icon: 'discord',
+    description: 'Inclusief verified bot token, custom invite URL en volledige eigendomsrechten met OGE transfer.',
+    status: 'available'
+  },
+  {
+    id: 5820,
+    title: 'GitHub Enterprise Dev 2014 (Arctic Code Vault)',
+    category: 'developer',
+    categoryName: 'Developer & Cloud Infrastructuur',
+    company: 'Microsoft / GitHub Inc.',
+    platform: 'GitHub',
+    grade: 'A',
+    price: 1750,
+    rentPerDay: 40,
+    change24h: '+5.5%',
+    isPositiveChange: true,
+    history: {
+      '1D': [1710, 1720, 1730, 1740, 1745, 1750],
+      '1W': [1550, 1600, 1640, 1680, 1715, 1735, 1750],
+      '1M': [1350, 1420, 1500, 1590, 1670, 1720, 1750],
+      '1Y': [1000, 1150, 1300, 1450, 1600, 1700, 1750],
+      'ALL': [600, 850, 1100, 1350, 1580, 1750]
+    },
+    volumeHistory: {
+      '1D': [25, 32, 40, 48, 55, 65],
+      '1W': [80, 95, 115, 135, 160, 190, 225],
+      '1M': [310, 360, 420, 480, 540, 610, 700],
+      '1Y': [1200, 1400, 1650, 1900, 2200, 2450, 2750],
+      'ALL': [2300, 3000, 3900, 4900, 5900, 7100]
+    },
+    labels: {
+      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
+      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
+      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
+      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
+    },
+    followersOrRating: '2.400 Followers & 1.2K Stars',
+    ageYears: '10 jaar',
+    verificationLevel: 'Pro Developer + Arctic Vault',
+    banRiskPercent: 0,
+    escrowBorg: 300,
+    icon: 'github',
+    description: 'Aged reputatie, Copilot Pro actief, verhoogde API rate-limits en whitelisted in diverse tech grants.',
+    status: 'available'
+  },
+  {
+    id: 6730,
+    title: 'Stripe Verified EU Merchant Account (Clean History)',
+    category: 'fintech',
+    categoryName: 'Fintech & Bedrijfsaccounts',
+    company: 'Stripe Inc.',
+    platform: 'Stripe',
+    grade: 'A',
+    price: 2950,
+    rentPerDay: 85,
+    change24h: '+8.1%',
+    isPositiveChange: true,
+    history: {
+      '1D': [2890, 2905, 2920, 2935, 2945, 2950],
+      '1W': [2600, 2680, 2750, 2820, 2890, 2930, 2950],
+      '1M': [2300, 2420, 2550, 2680, 2790, 2880, 2950],
+      '1Y': [1600, 1850, 2100, 2400, 2650, 2850, 2950],
+      'ALL': [950, 1350, 1750, 2200, 2650, 2950]
+    },
+    volumeHistory: {
+      '1D': [38, 48, 56, 68, 80, 95],
+      '1W': [105, 125, 150, 180, 215, 250, 300],
+      '1M': [390, 450, 520, 600, 690, 770, 880],
+      '1Y': [1400, 1700, 2050, 2400, 2750, 3100, 3500],
+      'ALL': [2600, 3500, 4600, 5800, 7000, 8400]
+    },
+    labels: {
+      '1D': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+      '1W': ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'],
+      '1M': ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Heden'],
+      '1Y': ['Q1', 'Q2', 'Q3', 'Q4', 'Q1-25', 'Q2-25', 'Q3-25'],
+      'ALL': ['2021', '2022', '2023', '2024', '2025', '2026']
+    },
+    followersOrRating: '0.00% Dispute Rate (Tier 1)',
+    ageYears: '4 jaar',
+    verificationLevel: 'ID & KvK Geverifieerd (Instant Payout)',
+    banRiskPercent: 0,
+    escrowBorg: 600,
+    icon: 'credit-card',
+    description: 'SEPA Direct Debit, iDEAL & Creditcard processing direct actief. Instant rolling 24u payouts.',
     status: 'available'
   }
 ];

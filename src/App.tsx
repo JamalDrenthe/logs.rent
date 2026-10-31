@@ -99,7 +99,7 @@ export default function App() {
   // State management with localStorage persistence
   const [activeTab, setActiveTab] = useState<string>('home');
   const [accounts, setAccounts] = useState<AccountListing[]>(() =>
-    loadFromStorage('logs-rent-accounts', INITIAL_ACCOUNTS)
+    loadFromStorage('logs-rent-accounts-v3', INITIAL_ACCOUNTS)
   );
   const [selectedAccount, setSelectedAccount] = useState<AccountListing>(
     () => accounts[0] || INITIAL_ACCOUNTS[0]
@@ -183,7 +183,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    window.localStorage.setItem('logs-rent-accounts', JSON.stringify(accounts));
+    window.localStorage.setItem('logs-rent-accounts-v3', JSON.stringify(accounts));
   }, [accounts]);
   useEffect(() => {
     window.localStorage.setItem('logs-rent-portfolio', JSON.stringify(portfolio));
@@ -504,7 +504,7 @@ export default function App() {
   // Reset all data to factory demo defaults
   const handleResetData = () => {
     if (window.confirm('Weet u zeker dat u alle marktdata, portfolio en transacties wilt resetten naar de standaard beginwaarden?')) {
-      window.localStorage.removeItem('logs-rent-accounts');
+      window.localStorage.removeItem('logs-rent-accounts-v3');
       window.localStorage.removeItem('logs-rent-portfolio');
       window.localStorage.removeItem('logs-rent-balance');
       window.localStorage.removeItem('logs-rent-yield');

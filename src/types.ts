@@ -1,4 +1,10 @@
-export type AccountCategory = 'social' | 'gaming' | 'flex';
+export type AccountCategory =
+  | 'social'
+  | 'ads_agency'
+  | 'gaming'
+  | 'flex'
+  | 'developer'
+  | 'fintech';
 
 export type AccountGrade = 'A' | 'B' | 'C';
 
@@ -8,6 +14,8 @@ export interface AccountListing {
   id: number;
   title: string;
   category: AccountCategory;
+  categoryName?: string;
+  company: string;
   platform: string;
   grade: AccountGrade;
   price: number;

@@ -14,8 +14,10 @@ export function ValuatieTab({ onOpenListingModal }: ValuatieTabProps) {
   // Algorithm calculation
   let multiplier = 0.026;
   if (platform === 'uber') multiplier = 0.42; // Ritten & Rating
-  if (platform === 'facebook') multiplier = 0.035;
-  if (platform === 'psn') multiplier = 2.8;
+  if (platform === 'facebook' || platform === 'google_ads') multiplier = 0.045;
+  if (platform === 'psn' || platform === 'steam') multiplier = 2.8;
+  if (platform === 'discord_dev') multiplier = 0.085;
+  if (platform === 'stripe_merchant') multiplier = 0.12;
 
   let baseVal = metrics * multiplier + ageMonths * 18;
   let grade = 'A';
@@ -63,12 +65,16 @@ export function ValuatieTab({ onOpenListingModal }: ValuatieTabProps) {
                   onChange={(e) => setPlatform(e.target.value)}
                   className="w-full bg-[#080C14] border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500"
                 >
-                  <option value="tiktok">TikTok (Volgers & Creator Monetisatie)</option>
-                  <option value="uber">Uber / Bolt Rider & Driver Profile</option>
-                  <option value="psn">PlayStation Network (AAA Games & PS Plus)</option>
-                  <option value="facebook">Facebook Ads Aged (Unlimited Daily Spend)</option>
-                  <option value="x">Twitter / X (Aged Verified Badge)</option>
-                  <option value="flex">Flexwerk / Temper Profile (5-Star Shifts)</option>
+                  <option value="tiktok">Social — TikTok (ByteDance Creator Monetisatie)</option>
+                  <option value="x">Social — Twitter / X (X Corp. Aged Verified Badge)</option>
+                  <option value="facebook">Ads & Agency — Meta Facebook Ads (Unlimited Spend)</option>
+                  <option value="google_ads">Ads & Agency — Google Ads MCC Invoiced (€50K)</option>
+                  <option value="psn">Gaming — PlayStation Network (Sony AAA Games & PS Plus)</option>
+                  <option value="steam">Gaming — Steam (Valve Prime Matchmaking & Skins)</option>
+                  <option value="flex">Flexwerk — Temper Profile (5-Star Hospitality Shifts)</option>
+                  <option value="uber">Flexwerk — Uber Pro VIP Chauffeur (4.98 Rating)</option>
+                  <option value="discord_dev">Developer — Discord Early Supporter + Bot Dev</option>
+                  <option value="stripe_merchant">Fintech — Stripe EU Verified Merchant (Clean History)</option>
                 </select>
               </div>
 

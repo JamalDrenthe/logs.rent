@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { AccountListing, OrderBookEntry, RecentTrade, UserRole } from '../../types';
+import { CATEGORY_DEFINITIONS } from '../../data/mockData';
 import { TradingChart } from '../TradingChart';
 import {
   TrendingUp,
@@ -16,7 +17,8 @@ import {
   Sparkles,
   Share2,
   Lock,
-  ShieldAlert
+  ShieldAlert,
+  Building2
 } from 'lucide-react';
 
 interface BeursTabProps {
@@ -47,39 +49,69 @@ export function BeursTab({
   onNavigateToDisputes
 }: BeursTabProps) {
   const [timeframe, setTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('1W');
+  const [beursCategory, setBeursCategory] = useState<string>('all');
+
+  const filteredBeursAccounts = useMemo(() => {
+    if (beursCategory === 'all') return accounts;
+    return accounts.filter((a) => a.category === beursCategory);
+  }, [accounts, beursCategory]);
 
   return (
     <div className="min-w-0 space-y-5">
-      {/* Asset Quick Selector Ribbon */}
-      <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-3 shadow-xl flex items-center gap-2 overflow-x-auto scrollbar-none font-mono text-xs">
-        <span className="text-[11px] text-slate-500 uppercase px-2 shrink-0 flex items-center gap-1.5 font-bold">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Markt:</span>
-        </span>
-        {accounts.map((acc) => {
-          const isSelected = acc.id === selectedAccount.id;
-          return (
+      {/* Category Filter Pills & Asset Quick Selector Ribbon */}
+      <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-3 shadow-xl space-y-2.5 font-mono text-xs">
+        {/* Category switcher */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1">
+          <span className="text-[10px] text-slate-500 uppercase px-1 shrink-0 font-bold">
+            Sector:
+          </span>
+          {CATEGORY_DEFINITIONS.map((cat) => (
             <button
-              key={acc.id}
-              onClick={() => onSelectAccount(acc)}
-              className={`shrink-0 px-3 py-1.5 rounded-xl transition flex items-center gap-2 border ${
-                isSelected
-                  ? 'bg-slate-800 text-emerald-400 border-emerald-500/40 font-bold shadow-md'
-                  : 'bg-[#080C14] text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white'
+              key={cat.key}
+              onClick={() => setBeursCategory(cat.key)}
+              className={`shrink-0 px-2.5 py-1 rounded-lg transition text-[11px] cursor-pointer ${
+                beursCategory === cat.key
+                  ? 'bg-cyan-500 text-slate-950 font-bold'
+                  : 'bg-[#080C14] text-slate-400 border border-slate-800 hover:border-slate-700 hover:text-white'
               }`}
             >
-              <span className="text-cyan-400 font-bold">{acc.platform}</span>
-              <span className="text-white">€{acc.price}</span>
-              <span
-                className={`text-[10px] font-bold ${
-                  acc.isPositiveChange ? 'text-emerald-400' : 'text-rose-400'
+              {cat.shortName}
+            </button>
+          ))}
+        </div>
+
+        {/* Asset Ribbon */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pt-1 border-t border-slate-800/60">
+          <span className="text-[11px] text-slate-500 uppercase px-2 shrink-0 flex items-center gap-1.5 font-bold">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Noteringen ({filteredBeursAccounts.length}):</span>
+          </span>
+          {filteredBeursAccounts.map((acc) => {
+            const isSelected = acc.id === selectedAccount.id;
+            return (
+              <button
+                key={acc.id}
+                onClick={() => onSelectAccount(acc)}
+                className={`shrink-0 px-3 py-1.5 rounded-xl transition flex items-center gap-2 border cursor-pointer ${
+                  isSelected
+                    ? 'bg-slate-800 text-emerald-400 border-emerald-500/40 font-bold shadow-md'
+                    : 'bg-[#080C14] text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white'
                 }`}
               >
-                {acc.change24h}
-              </span>
-            </button>
-          );
-        })}
+                <span className="text-cyan-400 font-bold">{acc.platform}</span>
+                <span className="text-slate-400 text-[10px] hidden sm:inline">({acc.company || 'Org'})</span>
+                <span className="text-white">€{acc.price}</span>
+                <span
+                  className={`text-[10px] font-bold ${
+                    acc.isPositiveChange ? 'text-emerald-400' : 'text-rose-400'
+                  }`}
+                >
+                  {acc.change24h}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="grid min-w-0 grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -88,7 +120,7 @@ export function BeursTab({
           {/* Top header of selected asset */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-[#080C14] border border-slate-700 flex items-center justify-center text-emerald-400 text-xl font-mono font-bold shadow-inner">
+              <div className="w-12 h-12 rounded-xl bg-[#080C14] border border-slate-700 flex items-center justify-center text-emerald-400 text-xl font-mono font-bold shadow-inner shrink-0">
                 {selectedAccount.platform.slice(0, 2).toUpperCase()}
               </div>
               <div className="min-w-0">
@@ -108,9 +140,13 @@ export function BeursTab({
                     {selectedAccount.grade} Grade
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-slate-400 mt-1">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-slate-400 mt-1">
+                  <span className="flex items-center gap-1 text-slate-200">
+                    <Building2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <strong>{selectedAccount.company || 'Onafhankelijk'}</strong>
+                  </span>
                   <span>
-                    Platform: <strong className="text-slate-200">{selectedAccount.platform}</strong>
+                    Sector: <strong className="text-cyan-400">{selectedAccount.categoryName || selectedAccount.category}</strong>
                   </span>
                   <span>
                     Referentie: <strong className="text-cyan-400">ID #{selectedAccount.id}</strong>

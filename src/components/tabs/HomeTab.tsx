@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { AccountListing, UserRole } from '../../types';
+import { CATEGORY_DEFINITIONS } from '../../data/mockData';
 import {
   TrendingUp,
+  TrendingDown,
   Store,
   ShieldCheck,
   ShieldAlert,
@@ -21,7 +23,14 @@ import {
   Layers,
   ArrowUpRight,
   Wallet,
-  User
+  User,
+  Building2,
+  Share2,
+  Megaphone,
+  Gamepad2,
+  Briefcase,
+  Code,
+  CreditCard
 } from 'lucide-react';
 
 interface HomeTabProps {
@@ -494,6 +503,100 @@ export function HomeTab({
         </div>
       </section>
 
+      {/* 2.5. SECTOR- EN BEDRIJVEN-OVERZICHT */}
+      <section className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-cyan-400 font-mono text-xs">
+            <Building2 className="w-3.5 h-3.5" />
+            <span>{isNl ? 'GECLASSIFICEERD ECOSYSTEEM' : 'CLASSIFIED ECOSYSTEM'}</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            {isNl ? 'Accounts & Bedrijven per Categorie' : 'Accounts & Companies by Category'}
+          </h2>
+          <p className="text-slate-400 text-sm">
+            {isNl
+              ? 'Alle genoteerde activa zijn ondergebracht in zes transparante sectoren met bijbehorende technologiebedrijven en platforms.'
+              : 'All listed assets are categorized into six transparent sectors with verified parent companies and ecosystems.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {CATEGORY_DEFINITIONS.filter((c) => c.key !== 'all').map((cat) => {
+            const catAccounts = accounts.filter((a) => a.category === cat.key);
+            const companiesInCat = Array.from(new Set(catAccounts.map((a) => a.company).filter(Boolean)));
+            const minRent = catAccounts.length > 0 ? Math.min(...catAccounts.map((a) => a.rentPerDay)) : 15;
+            const minPrice = catAccounts.length > 0 ? Math.min(...catAccounts.map((a) => a.price)) : 400;
+
+            const iconMap: Record<string, any> = {
+              social: Share2,
+              ads_agency: Megaphone,
+              gaming: Gamepad2,
+              flex: Briefcase,
+              developer: Code,
+              fintech: CreditCard
+            };
+            const Icon = iconMap[cat.key] || Layers;
+
+            return (
+              <div
+                key={cat.key}
+                onClick={() => onNavigate('logs')}
+                className="group relative rounded-2xl border border-slate-800 bg-[#0F172A] p-6 shadow-xl hover:border-cyan-500/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-xs font-mono font-bold bg-[#080C14] border border-slate-800 text-cyan-400 px-2.5 py-1 rounded-lg">
+                      {catAccounts.length} listings
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      {cat.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                      {cat.description}
+                    </p>
+                  </div>
+
+                  {/* Bedrijven Tag Pills */}
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[10px] text-slate-500 uppercase font-mono tracking-wider block">
+                      {isNl ? 'Onderliggende Bedrijven & Platforms:' : 'Affiliated Companies & Platforms:'}
+                    </span>
+                    <div className="flex flex-wrap gap-1.5 font-mono text-[10px]">
+                      {companiesInCat.map((comp) => (
+                        <span
+                          key={comp}
+                          className="bg-[#080C14] text-slate-300 px-2 py-0.5 rounded border border-slate-800 flex items-center gap-1"
+                        >
+                          <Building2 className="w-2.5 h-2.5 text-cyan-400" />
+                          <span>{comp}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between font-mono text-xs">
+                  <div>
+                    <span className="text-slate-500 text-[10px] block">Huur vanaf</span>
+                    <span className="text-emerald-400 font-bold">€ {minRent}/dag</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-500 text-[10px] block">Koop vanaf</span>
+                    <span className="text-white font-bold">€ {minPrice.toLocaleString('nl-NL')}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {/* 3. TRENDING OPPORTUNITIES SHOWCASE */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
@@ -541,6 +644,17 @@ export function HomeTab({
                       {account.change24h}
                     </span>
                   </div>
+                </div>
+
+                {/* Company & Category tags */}
+                <div className="flex flex-wrap items-center gap-1.5 font-mono text-[10px]">
+                  <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1">
+                    <Building2 className="w-2.5 h-2.5 text-cyan-400" />
+                    <strong>{account.company || 'Onafhankelijk'}</strong>
+                  </span>
+                  <span className="bg-cyan-500/10 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30">
+                    {account.categoryName || account.category}
+                  </span>
                 </div>
 
                 <div>
