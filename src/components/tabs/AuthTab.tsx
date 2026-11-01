@@ -3,6 +3,7 @@ import { User, Lock, Mail, CheckCircle2, AlertCircle, RefreshCw, ArrowRight, Shi
 import { Logo } from '../Logo';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../lib/firebase';
+import { crmos } from '../../lib/crmos';
 
 interface AuthTabProps {
   initialMode?: 'login' | 'register';
@@ -28,7 +29,30 @@ export function AuthTab({ initialMode = 'login', onLoginSuccess, currentUser, on
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const userEmail = result.user.email || 'info@logs.rent';
-      setSuccess(true);
+      // Sync to CRMos
+      crmos.upsertContact({
+        first_name: result.user.displayName?.split(' ')[0] || userEmail.split('@')[0],
+        last_name: result.user.displayName?.split(' ').slice(1).join(' ') || '',
+        email: userEmail,
+        company: 'Geregistreerd Lid — logs.rent',
+        company_tags: ['#logs_rent'],
+        tags: ['#logs_rent_trader', 'Google OAuth Lid'],
+        status: 'active'
+      }).catch(() => {});
+
+      // Sync to CRMos
+    const names = fullName.trim().split(' ');
+    crmos.upsertContact({
+      first_name: names[0] || cleanEmail.split('@')[0],
+      last_name: names.slice(1).join(' ') || '',
+      email: cleanEmail,
+      company: 'Geregistreerd Lid — logs.rent',
+      company_tags: ['#logs_rent'],
+      tags: ['#logs_rent_trader', isRegister ? 'Nieuwe Registratie' : 'Inloggen'],
+      status: 'active'
+    }).catch(() => {});
+
+    setSuccess(true);
       setTimeout(() => {
         onLoginSuccess(userEmail);
         setSuccess(false);
@@ -57,6 +81,18 @@ export function AuthTab({ initialMode = 'login', onLoginSuccess, currentUser, on
       setError('Het Administrator account is beveiligd. Log uitsluitend in via de officiële Google OAuth verificatie.');
       return;
     }
+
+    // Sync to CRMos
+    const names = fullName.trim().split(' ');
+    crmos.upsertContact({
+      first_name: names[0] || cleanEmail.split('@')[0],
+      last_name: names.slice(1).join(' ') || '',
+      email: cleanEmail,
+      company: 'Geregistreerd Lid — logs.rent',
+      company_tags: ['#logs_rent'],
+      tags: ['#logs_rent_trader', isRegister ? 'Nieuwe Registratie' : 'Inloggen'],
+      status: 'active'
+    }).catch(() => {});
 
     setSuccess(true);
     setTimeout(() => {

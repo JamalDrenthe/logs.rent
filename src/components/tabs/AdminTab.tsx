@@ -356,6 +356,16 @@ export function AdminTab({
                 ACTIEF
               </span>
             </div>
+
+            <div className="p-4 rounded-xl bg-[#080C14] border border-cyan-500/30 flex items-center justify-between">
+              <div>
+                <span className="text-cyan-400 block text-[11px] font-bold">CRMos REST API (Bi-directionele AI Ecosysteem Hub)</span>
+                <span className="text-slate-200 text-xs">https://crmos.one/api/v1 • Sollicitaties, Leads, Deals &amp; Activiteiten gesynchroniseerd</span>
+              </div>
+              <span className="px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-[11px] font-bold">
+                GEKOPPELD
+              </span>
+            </div>
           </div>
         </div>
       )}

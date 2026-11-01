@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { crmos } from '../../lib/crmos';
 import { Mail, MessageSquare, Send, CheckCircle2, Clock, ShieldCheck, Globe, HelpCircle } from 'lucide-react';
 
 export function ContactTab() {
@@ -8,11 +9,42 @@ export function ContactTab() {
   const [message, setMessage] = useState<string>('');
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
 
     setIsSubmitted(true);
+
+    const nameParts = name.trim().split(' ');
+    const firstName = nameParts[0] || 'Bezoeker';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    // Synchroniseer lead en activiteit direct naar CRMos
+    try {
+      await Promise.allSettled([
+        crmos.upsertContact({
+          first_name: firstName,
+          last_name: lastName,
+          email: email.trim(),
+          company: 'Inbound Lead — logs.rent',
+          company_tags: ['#logs_rent'],
+          tags: ['#logs_rent_contact', `#topic_${topic}`, 'Inbound Desk'],
+          notes: `Onderwerp: ${topic}. Bericht: ${message.trim()}`,
+          status: 'lead',
+          source: 'logs.rent / Contact'
+        }),
+        crmos.logActivity({
+          email: email.trim(),
+          type: 'email',
+          title: `Contactbericht logs.rent: ${topic.toUpperCase()}`,
+          description: message.trim(),
+          performed_by: 'logs.rent Desk Contactformulier'
+        })
+      ]);
+    } catch (err) {
+      console.warn('[CRMos] Background contact sync error:', err);
+    }
+
     setTimeout(() => {
       setName('');
       setEmail('');

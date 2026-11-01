@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { crmos } from '../../lib/crmos';
 import {
   Briefcase,
   MapPin,
@@ -437,9 +438,52 @@ export function CareerTab() {
     return matchesCategory && matchesSearch;
   });
 
-  const handleApplySubmit = (e: React.FormEvent) => {
+  const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
+
+    const nameParts = applicantName.trim().split(' ');
+    const firstName = nameParts[0] || 'Kandidaat';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    // Synchroniseer direct naar CRMos
+    if (applyVacancy) {
+      try {
+        await Promise.allSettled([
+          crmos.registerCandidate({
+            first_name: firstName,
+            last_name: lastName,
+            email: applicantEmail.trim(),
+            phone: applicantPhone.trim() || undefined,
+            role_id: applyVacancy.id,
+            role_title: applyVacancy.title,
+            skills: [applyVacancy.title, applyVacancy.domain, applicantContractType],
+            experience_years: applyVacancy.experience.includes('5+') ? 5 : 3,
+            location: '100% Remote',
+            contract_type: applicantContractType,
+            hours: applicantHours,
+            linkedin_url: applicantLinkedIn.trim() || undefined,
+            notes: `Sollicitatie voor [${applyVacancy.id}] ${applyVacancy.title}. Motivatie: ${applicantMotivation.trim()}`,
+            source: 'logs.rent / Career'
+          }),
+          crmos.upsertContact({
+            first_name: firstName,
+            last_name: lastName,
+            email: applicantEmail.trim(),
+            phone: applicantPhone.trim() || undefined,
+            company: 'Kandidaat — logs.rent',
+            company_tags: ['#logs_rent', '#sollicitatie'],
+            tags: ['#sollicitant', `#rol_${applyVacancy.id}`, applicantContractType, 'Remote'],
+            notes: `Sollicitant voor ${applyVacancy.title} (${applicantHours}, ${applicantContractType}).`,
+            status: 'applicant',
+            source: 'logs.rent'
+          })
+        ]);
+      } catch (err) {
+        console.warn('[CRMos] Background sync error:', err);
+      }
+    }
+
     setTimeout(() => {
       setIsSubmitted(false);
       setApplyVacancy(null);

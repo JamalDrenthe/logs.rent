@@ -3,6 +3,7 @@ import { User, Lock, Mail, CheckCircle2, X, LogOut, ShieldCheck, AlertCircle, Re
 import { Logo } from './Logo';
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
+import { crmos } from '../lib/crmos';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -31,7 +32,28 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const userEmail = result.user.email || 'info@logs.rent';
-      setSuccess(true);
+      // Sync to CRMos
+      crmos.upsertContact({
+        first_name: result.user.displayName?.split(' ')[0] || userEmail.split('@')[0],
+        last_name: result.user.displayName?.split(' ').slice(1).join(' ') || '',
+        email: userEmail,
+        company: 'Geregistreerd Lid — logs.rent',
+        company_tags: ['#logs_rent'],
+        tags: ['#logs_rent_trader', 'Google OAuth Lid'],
+        status: 'active'
+      }).catch(() => {});
+
+      // Sync to CRMos
+    crmos.upsertContact({
+      first_name: cleanEmail.split('@')[0],
+      email: cleanEmail,
+      company: 'Geregistreerd Lid — logs.rent',
+      company_tags: ['#logs_rent'],
+      tags: ['#logs_rent_trader', isRegister ? 'Nieuwe Registratie' : 'Inloggen'],
+      status: 'active'
+    }).catch(() => {});
+
+    setSuccess(true);
       setTimeout(() => {
         onLoginSuccess(userEmail);
         setSuccess(false);
@@ -74,6 +96,16 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess, onLogout, currentUs
       setError('Het Administrator account is beveiligd. Log uitsluitend in via de officiële Google OAuth verificatie.');
       return;
     }
+
+    // Sync to CRMos
+    crmos.upsertContact({
+      first_name: cleanEmail.split('@')[0],
+      email: cleanEmail,
+      company: 'Geregistreerd Lid — logs.rent',
+      company_tags: ['#logs_rent'],
+      tags: ['#logs_rent_trader', isRegister ? 'Nieuwe Registratie' : 'Inloggen'],
+      status: 'active'
+    }).catch(() => {});
 
     setSuccess(true);
     setTimeout(() => {

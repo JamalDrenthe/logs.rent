@@ -28,6 +28,7 @@ import { ListingModal } from './components/ListingModal';
 import { AuthModal } from './components/AuthModal';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './lib/firebase';
+import { crmos } from './lib/crmos';
 
 import { HomeTab } from './components/tabs/HomeTab';
 import { BeursTab } from './components/tabs/BeursTab';
@@ -429,6 +430,23 @@ export default function App() {
     } else {
       triggerToast(`Bod van € ${tradeData.price},00 voor ${selectedAccount.title} in orderboek geplaatst!`);
     }
+
+    // Synchroniseer deal & activiteit naar CRMos
+    crmos.createDeal({
+      name: `${tradeData.type === 'KOOP' ? 'Aankoop' : tradeData.type === 'HUUR' ? 'Huur' : 'Order Bod'}: ${selectedAccount.title} (#${selectedAccount.id})`,
+      value: totalCost,
+      stage: tradeData.type === 'BOD' ? 'proposal' : 'won',
+      company_name: selectedAccount.company || 'logs.rent Market',
+      probability: tradeData.type === 'BOD' ? 60 : 100,
+      tags: ['#logs_rent', tradeData.type, selectedAccount.platform, selectedAccount.category]
+    }).catch(() => {});
+
+    crmos.logActivity({
+      type: 'trade',
+      title: `${tradeData.type} transactie: ${selectedAccount.title}`,
+      description: `Transactiewaarde: € ${totalCost} (${tradeData.type === 'HUUR' ? `${tradeData.days || 7} dagen huur` : 'Eigendomsoverdracht'}). Escrow borg: € ${tradeData.escrowBorg}.`,
+      performed_by: currentUser || 'Anonieme Handelaar'
+    }).catch(() => {});
   };
 
   // Update account item in portfolio
